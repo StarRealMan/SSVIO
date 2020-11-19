@@ -31,5 +31,5 @@
 *.out
 *.app
 
-#Makefiles
-*.make
+#Build
+./build/*
