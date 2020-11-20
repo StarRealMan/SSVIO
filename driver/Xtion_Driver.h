@@ -29,6 +29,7 @@ public:
     pcl::PointXYZRGB getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix4f trans);
     
     bool isGrabRdy();
+    void setGrabRdyfalse();
 
     void GrabLoop();
     void GrabStop();

@@ -159,6 +159,12 @@ bool Xtion_Camera::isGrabRdy()
     return _grabRdy;
 }
 
+void Xtion_Camera::setGrabRdyfalse()
+{
+    std::lock_guard<std::mutex> lck(_grabrdy_mtx);
+    _grabRdy = false;
+}
+
 void Xtion_Camera::showdevice()
 {
     std::cout << "电脑上连接着 " << _deviceList.getSize() << " 个体感设备." << std::endl;
@@ -230,9 +236,9 @@ void Xtion_Camera::GrabLoop()
 {
     while(_grabrunning.load())
     {
-        std::cout << " grab start " << std::endl;
+        std::cout << "grab start" << std::endl;
         grab();
-        std::cout << " grab ok " << std::endl;
+        std::cout << "grab ok" << std::endl;
     }
 }
 

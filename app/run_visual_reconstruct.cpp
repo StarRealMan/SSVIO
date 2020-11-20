@@ -18,8 +18,11 @@ int main(int argc,char** argv)
 	}
 
 	vo->VOStop();
+	std::cout << "vo closed!" << std::endl;
 	viewer->ViewerStop();
+	std::cout << "viewer closed!" << std::endl;
 	xtion_cam->GrabStop();
+	std::cout << "camera closed!" << std::endl;
 
 	return 0;
 }

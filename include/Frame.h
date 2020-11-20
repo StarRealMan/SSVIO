@@ -26,8 +26,7 @@ public:
     ~Frame();
 
     void UpdateFrame();
-    void FeatureDetect();
-    void Optimize(Frame::Ptr lastframe);
+    bool Optimize(Frame::Ptr lastframe);
     void getGoodMatch(std::vector<cv::DMatch>& goodmatchepoints);
     Eigen::Matrix4f getPose();
 

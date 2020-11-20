@@ -19,10 +19,11 @@ void VO::VOLoop()
     std::vector<cv::DMatch> goodmatch;
     while(_vorunning.load())
     {
-        if(_vocam->isGrabRdy())// 线程同步问题
+        if(_vocam->isGrabRdy())
         {
-            std::cout << " vo start " << std::endl;
-
+            auto t1 = std::chrono::steady_clock::now();
+            std::cout << "vo start" << std::endl;
+            _vocam->setGrabRdyfalse();
             Eigen::Matrix4f pose_estimate;
             _frame->UpdateFrame();
             if(!_InitRdy)
@@ -38,7 +39,10 @@ void VO::VOLoop()
                 // Map
             }
             memcpy(_lastframe.get(),_frame.get(),sizeof(Frame));
-            std::cout << " vo ok " << std::endl;
+            std::cout << "vo ok" << std::endl;
+            auto t2 = std::chrono::steady_clock::now();
+            auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+            std::cout << time_used.count()*1000 << " ms per frame " << std::endl;
         }
     }
 }
