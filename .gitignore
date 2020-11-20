@@ -31,5 +31,9 @@
 *.out
 *.app
 
-#Build
-./build/*
+# Generated file
+build/
+bin/
+lib/
+
+
