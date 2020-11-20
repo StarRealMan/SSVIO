@@ -8,6 +8,8 @@ src/CMakeFiles/visual_recon.dir/Frame.cpp.o
  /home/starydy/SemSeg_Slam/SSVIO/src/Frame.cpp
  /usr/include/eigen3/Eigen/Cholesky
  /usr/include/eigen3/Eigen/Core
+ /usr/include/eigen3/Eigen/Dense
+ /usr/include/eigen3/Eigen/Eigenvalues
  /usr/include/eigen3/Eigen/Geometry
  /usr/include/eigen3/Eigen/Householder
  /usr/include/eigen3/Eigen/Jacobi
@@ -149,6 +151,25 @@ src/CMakeFiles/visual_recon.dir/Frame.cpp.o
  /usr/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h
  /usr/include/eigen3/Eigen/src/Core/util/StaticAssert.h
  /usr/include/eigen3/Eigen/src/Core/util/XprHelper.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./ComplexSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./RealSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./Tridiagonalization.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/EigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h
  /usr/include/eigen3/Eigen/src/Geometry/AlignedBox.h
  /usr/include/eigen3/Eigen/src/Geometry/AngleAxis.h
  /usr/include/eigen3/Eigen/src/Geometry/EulerAngles.h
@@ -211,6 +232,59 @@ src/CMakeFiles/visual_recon.dir/Frame.cpp.o
  /usr/include/pcl-1.8/pcl/point_traits.h
  /usr/include/pcl-1.8/pcl/point_types.h
  /usr/include/pcl-1.8/pcl/register_point_struct.h
+ /usr/include/suitesparse/SuiteSparse_config.h
+ /usr/include/suitesparse/cs.h
+ /usr/local/include/g2o/config.h
+ /usr/local/include/g2o/core/base_binary_edge.h
+ /usr/local/include/g2o/core/base_binary_edge.hpp
+ /usr/local/include/g2o/core/base_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.hpp
+ /usr/local/include/g2o/core/base_vertex.h
+ /usr/local/include/g2o/core/base_vertex.hpp
+ /usr/local/include/g2o/core/batch_stats.h
+ /usr/local/include/g2o/core/block_solver.h
+ /usr/local/include/g2o/core/block_solver.hpp
+ /usr/local/include/g2o/core/creators.h
+ /usr/local/include/g2o/core/dynamic_aligned_buffer.hpp
+ /usr/local/include/g2o/core/eigen_types.h
+ /usr/local/include/g2o/core/g2o_core_api.h
+ /usr/local/include/g2o/core/hyper_graph.h
+ /usr/local/include/g2o/core/io_helper.h
+ /usr/local/include/g2o/core/jacobian_workspace.h
+ /usr/local/include/g2o/core/linear_solver.h
+ /usr/local/include/g2o/core/marginal_covariance_cholesky.h
+ /usr/local/include/g2o/core/matrix_operations.h
+ /usr/local/include/g2o/core/matrix_structure.h
+ /usr/local/include/g2o/core/openmp_mutex.h
+ /usr/local/include/g2o/core/optimizable_graph.h
+ /usr/local/include/g2o/core/optimization_algorithm.h
+ /usr/local/include/g2o/core/optimization_algorithm_gauss_newton.h
+ /usr/local/include/g2o/core/optimization_algorithm_levenberg.h
+ /usr/local/include/g2o/core/optimization_algorithm_with_hessian.h
+ /usr/local/include/g2o/core/parameter.h
+ /usr/local/include/g2o/core/parameter_container.h
+ /usr/local/include/g2o/core/robust_kernel.h
+ /usr/local/include/g2o/core/robust_kernel_impl.h
+ /usr/local/include/g2o/core/solver.h
+ /usr/local/include/g2o/core/sparse_block_matrix.h
+ /usr/local/include/g2o/core/sparse_block_matrix.hpp
+ /usr/local/include/g2o/core/sparse_block_matrix_ccs.h
+ /usr/local/include/g2o/core/sparse_block_matrix_diagonal.h
+ /usr/local/include/g2o/core/sparse_optimizer.h
+ /usr/local/include/g2o/solvers/csparse/csparse_extension.h
+ /usr/local/include/g2o/solvers/csparse/csparse_helper.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_api.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_extension_api.h
+ /usr/local/include/g2o/solvers/csparse/linear_solver_csparse.h
+ /usr/local/include/g2o/solvers/dense/linear_solver_dense.h
+ /usr/local/include/g2o/stuff/g2o_stuff_api.h
+ /usr/local/include/g2o/stuff/macros.h
+ /usr/local/include/g2o/stuff/misc.h
+ /usr/local/include/g2o/stuff/property.h
+ /usr/local/include/g2o/stuff/sparse_helper.h
+ /usr/local/include/g2o/stuff/string_tools.h
+ /usr/local/include/g2o/stuff/timeutil.h
  /usr/local/include/opencv/cxcore.h
  /usr/local/include/opencv2/calib3d.hpp
  /usr/local/include/opencv2/calib3d/calib3d_c.h
@@ -350,6 +424,13 @@ src/CMakeFiles/visual_recon.dir/Frame.cpp.o
  /usr/local/include/opencv2/viz/viz3d.hpp
  /usr/local/include/opencv2/viz/vizcore.hpp
  /usr/local/include/opencv2/viz/widgets.hpp
+ /usr/local/include/sophus/common.hpp
+ /usr/local/include/sophus/formatstring.hpp
+ /usr/local/include/sophus/rotation_matrix.hpp
+ /usr/local/include/sophus/se3.hpp
+ /usr/local/include/sophus/so2.hpp
+ /usr/local/include/sophus/so3.hpp
+ /usr/local/include/sophus/types.hpp
 src/CMakeFiles/visual_recon.dir/Reconstruct.cpp.o
  ../driver/Xtion_Driver.h
  ../include/Frame.h
@@ -629,6 +710,8 @@ src/CMakeFiles/visual_recon.dir/Reconstruct.cpp.o
  /usr/include/pcl-1.8/pcl/visualization/point_cloud_geometry_handlers.h
  /usr/include/pcl-1.8/pcl/visualization/point_cloud_handlers.h
  /usr/include/pcl-1.8/pcl/visualization/point_picking_event.h
+ /usr/include/suitesparse/SuiteSparse_config.h
+ /usr/include/suitesparse/cs.h
  /usr/include/vtk-6.3/vtkABI.h
  /usr/include/vtk-6.3/vtkAbstractArray.h
  /usr/include/vtk-6.3/vtkAbstractMapper.h
@@ -763,6 +846,57 @@ src/CMakeFiles/visual_recon.dir/Reconstruct.cpp.o
  /usr/include/vtk-6.3/vtkVolumeCollection.h
  /usr/include/vtk-6.3/vtkWeakPointerBase.h
  /usr/include/vtk-6.3/vtkWin32Header.h
+ /usr/local/include/g2o/config.h
+ /usr/local/include/g2o/core/base_binary_edge.h
+ /usr/local/include/g2o/core/base_binary_edge.hpp
+ /usr/local/include/g2o/core/base_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.hpp
+ /usr/local/include/g2o/core/base_vertex.h
+ /usr/local/include/g2o/core/base_vertex.hpp
+ /usr/local/include/g2o/core/batch_stats.h
+ /usr/local/include/g2o/core/block_solver.h
+ /usr/local/include/g2o/core/block_solver.hpp
+ /usr/local/include/g2o/core/creators.h
+ /usr/local/include/g2o/core/dynamic_aligned_buffer.hpp
+ /usr/local/include/g2o/core/eigen_types.h
+ /usr/local/include/g2o/core/g2o_core_api.h
+ /usr/local/include/g2o/core/hyper_graph.h
+ /usr/local/include/g2o/core/io_helper.h
+ /usr/local/include/g2o/core/jacobian_workspace.h
+ /usr/local/include/g2o/core/linear_solver.h
+ /usr/local/include/g2o/core/marginal_covariance_cholesky.h
+ /usr/local/include/g2o/core/matrix_operations.h
+ /usr/local/include/g2o/core/matrix_structure.h
+ /usr/local/include/g2o/core/openmp_mutex.h
+ /usr/local/include/g2o/core/optimizable_graph.h
+ /usr/local/include/g2o/core/optimization_algorithm.h
+ /usr/local/include/g2o/core/optimization_algorithm_gauss_newton.h
+ /usr/local/include/g2o/core/optimization_algorithm_levenberg.h
+ /usr/local/include/g2o/core/optimization_algorithm_with_hessian.h
+ /usr/local/include/g2o/core/parameter.h
+ /usr/local/include/g2o/core/parameter_container.h
+ /usr/local/include/g2o/core/robust_kernel.h
+ /usr/local/include/g2o/core/robust_kernel_impl.h
+ /usr/local/include/g2o/core/solver.h
+ /usr/local/include/g2o/core/sparse_block_matrix.h
+ /usr/local/include/g2o/core/sparse_block_matrix.hpp
+ /usr/local/include/g2o/core/sparse_block_matrix_ccs.h
+ /usr/local/include/g2o/core/sparse_block_matrix_diagonal.h
+ /usr/local/include/g2o/core/sparse_optimizer.h
+ /usr/local/include/g2o/solvers/csparse/csparse_extension.h
+ /usr/local/include/g2o/solvers/csparse/csparse_helper.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_api.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_extension_api.h
+ /usr/local/include/g2o/solvers/csparse/linear_solver_csparse.h
+ /usr/local/include/g2o/solvers/dense/linear_solver_dense.h
+ /usr/local/include/g2o/stuff/g2o_stuff_api.h
+ /usr/local/include/g2o/stuff/macros.h
+ /usr/local/include/g2o/stuff/misc.h
+ /usr/local/include/g2o/stuff/property.h
+ /usr/local/include/g2o/stuff/sparse_helper.h
+ /usr/local/include/g2o/stuff/string_tools.h
+ /usr/local/include/g2o/stuff/timeutil.h
  /usr/local/include/opencv/cxcore.h
  /usr/local/include/opencv2/calib3d.hpp
  /usr/local/include/opencv2/calib3d/calib3d_c.h
@@ -902,6 +1036,13 @@ src/CMakeFiles/visual_recon.dir/Reconstruct.cpp.o
  /usr/local/include/opencv2/viz/viz3d.hpp
  /usr/local/include/opencv2/viz/vizcore.hpp
  /usr/local/include/opencv2/viz/widgets.hpp
+ /usr/local/include/sophus/common.hpp
+ /usr/local/include/sophus/formatstring.hpp
+ /usr/local/include/sophus/rotation_matrix.hpp
+ /usr/local/include/sophus/se3.hpp
+ /usr/local/include/sophus/so2.hpp
+ /usr/local/include/sophus/so3.hpp
+ /usr/local/include/sophus/types.hpp
 src/CMakeFiles/visual_recon.dir/Viewer.cpp.o
  ../driver/Xtion_Driver.h
  ../include/Viewer.h
@@ -1457,6 +1598,8 @@ src/CMakeFiles/visual_recon.dir/Visual_Odometry.cpp.o
  /home/starydy/SemSeg_Slam/SSVIO/src/Visual_Odometry.cpp
  /usr/include/eigen3/Eigen/Cholesky
  /usr/include/eigen3/Eigen/Core
+ /usr/include/eigen3/Eigen/Dense
+ /usr/include/eigen3/Eigen/Eigenvalues
  /usr/include/eigen3/Eigen/Geometry
  /usr/include/eigen3/Eigen/Householder
  /usr/include/eigen3/Eigen/Jacobi
@@ -1598,6 +1741,25 @@ src/CMakeFiles/visual_recon.dir/Visual_Odometry.cpp.o
  /usr/include/eigen3/Eigen/src/Core/util/ReenableStupidWarnings.h
  /usr/include/eigen3/Eigen/src/Core/util/StaticAssert.h
  /usr/include/eigen3/Eigen/src/Core/util/XprHelper.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./ComplexSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./HessenbergDecomposition.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./RealSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/./Tridiagonalization.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/EigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/HessenbergDecomposition.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealQZ.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h
+ /usr/include/eigen3/Eigen/src/Eigenvalues/Tridiagonalization.h
  /usr/include/eigen3/Eigen/src/Geometry/AlignedBox.h
  /usr/include/eigen3/Eigen/src/Geometry/AngleAxis.h
  /usr/include/eigen3/Eigen/src/Geometry/EulerAngles.h
@@ -1660,6 +1822,59 @@ src/CMakeFiles/visual_recon.dir/Visual_Odometry.cpp.o
  /usr/include/pcl-1.8/pcl/point_traits.h
  /usr/include/pcl-1.8/pcl/point_types.h
  /usr/include/pcl-1.8/pcl/register_point_struct.h
+ /usr/include/suitesparse/SuiteSparse_config.h
+ /usr/include/suitesparse/cs.h
+ /usr/local/include/g2o/config.h
+ /usr/local/include/g2o/core/base_binary_edge.h
+ /usr/local/include/g2o/core/base_binary_edge.hpp
+ /usr/local/include/g2o/core/base_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.h
+ /usr/local/include/g2o/core/base_unary_edge.hpp
+ /usr/local/include/g2o/core/base_vertex.h
+ /usr/local/include/g2o/core/base_vertex.hpp
+ /usr/local/include/g2o/core/batch_stats.h
+ /usr/local/include/g2o/core/block_solver.h
+ /usr/local/include/g2o/core/block_solver.hpp
+ /usr/local/include/g2o/core/creators.h
+ /usr/local/include/g2o/core/dynamic_aligned_buffer.hpp
+ /usr/local/include/g2o/core/eigen_types.h
+ /usr/local/include/g2o/core/g2o_core_api.h
+ /usr/local/include/g2o/core/hyper_graph.h
+ /usr/local/include/g2o/core/io_helper.h
+ /usr/local/include/g2o/core/jacobian_workspace.h
+ /usr/local/include/g2o/core/linear_solver.h
+ /usr/local/include/g2o/core/marginal_covariance_cholesky.h
+ /usr/local/include/g2o/core/matrix_operations.h
+ /usr/local/include/g2o/core/matrix_structure.h
+ /usr/local/include/g2o/core/openmp_mutex.h
+ /usr/local/include/g2o/core/optimizable_graph.h
+ /usr/local/include/g2o/core/optimization_algorithm.h
+ /usr/local/include/g2o/core/optimization_algorithm_gauss_newton.h
+ /usr/local/include/g2o/core/optimization_algorithm_levenberg.h
+ /usr/local/include/g2o/core/optimization_algorithm_with_hessian.h
+ /usr/local/include/g2o/core/parameter.h
+ /usr/local/include/g2o/core/parameter_container.h
+ /usr/local/include/g2o/core/robust_kernel.h
+ /usr/local/include/g2o/core/robust_kernel_impl.h
+ /usr/local/include/g2o/core/solver.h
+ /usr/local/include/g2o/core/sparse_block_matrix.h
+ /usr/local/include/g2o/core/sparse_block_matrix.hpp
+ /usr/local/include/g2o/core/sparse_block_matrix_ccs.h
+ /usr/local/include/g2o/core/sparse_block_matrix_diagonal.h
+ /usr/local/include/g2o/core/sparse_optimizer.h
+ /usr/local/include/g2o/solvers/csparse/csparse_extension.h
+ /usr/local/include/g2o/solvers/csparse/csparse_helper.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_api.h
+ /usr/local/include/g2o/solvers/csparse/g2o_csparse_extension_api.h
+ /usr/local/include/g2o/solvers/csparse/linear_solver_csparse.h
+ /usr/local/include/g2o/solvers/dense/linear_solver_dense.h
+ /usr/local/include/g2o/stuff/g2o_stuff_api.h
+ /usr/local/include/g2o/stuff/macros.h
+ /usr/local/include/g2o/stuff/misc.h
+ /usr/local/include/g2o/stuff/property.h
+ /usr/local/include/g2o/stuff/sparse_helper.h
+ /usr/local/include/g2o/stuff/string_tools.h
+ /usr/local/include/g2o/stuff/timeutil.h
  /usr/local/include/opencv/cxcore.h
  /usr/local/include/opencv2/calib3d.hpp
  /usr/local/include/opencv2/calib3d/calib3d_c.h
@@ -1799,3 +2014,10 @@ src/CMakeFiles/visual_recon.dir/Visual_Odometry.cpp.o
  /usr/local/include/opencv2/viz/viz3d.hpp
  /usr/local/include/opencv2/viz/vizcore.hpp
  /usr/local/include/opencv2/viz/widgets.hpp
+ /usr/local/include/sophus/common.hpp
+ /usr/local/include/sophus/formatstring.hpp
+ /usr/local/include/sophus/rotation_matrix.hpp
+ /usr/local/include/sophus/se3.hpp
+ /usr/local/include/sophus/so2.hpp
+ /usr/local/include/sophus/so3.hpp
+ /usr/local/include/sophus/types.hpp

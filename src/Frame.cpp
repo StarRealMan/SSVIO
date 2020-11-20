@@ -25,6 +25,29 @@ Eigen::Matrix4f Frame::getPose()
     return _pose;
 }
 
+void Frame::getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints)
+{
+    std::lock_guard<std::mutex> lck(_featurepoints_mtx);
+    featurepoints = _featurepoints;
+}
+
+void Frame::getBriefdesc(cv::Mat& briefdesc)
+{
+    std::lock_guard<std::mutex> lck(_briefdesc_mtx);
+    briefdesc = _briefdesc;
+}
+
+Eigen::Vector3f Frame::get3DPoint(cv::Point2f imgpos)
+{
+    Eigen::Matrix<float, 3, 1> temppoint;
+    float depth;
+
+    depth = _dframe.at<ushort>(imgpos.x,imgpos.y);
+    temppoint << (imgpos.x - _inner_cx)*depth*_inv_inner_fx, (imgpos.y - _inner_cy)*depth*_inv_inner_fy, depth;
+
+    return temppoint;
+}
+
 void Frame::UpdateFrame()
 {
     _rgbframe = _framecam->getRGBImage();
@@ -70,71 +93,59 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         std::cout << "match failed" << std::endl;
         return -2;
     }
-    
-    // pose_estimate
-    typedef g2o::BlockSolver_6_3 BlockSolverType;
-    typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
+   
+        if(_goodmatchepoints.size() > 30)
+    {
+        SE3 pose_estimate;
+        std::vector<cv::KeyPoint> lastfeaturepoints;
+        lastframe->getFeaturepoints(lastfeaturepoints);
+        typedef g2o::BlockSolver_6_3 BlockSolverType;
+        typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
 
-    auto solver = new g2o::OptimizationAlgorithmLevenberg(g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
-    g2o::SparseOptimizer optimizer;
-    optimizer.setAlgorithm(solver);
+        auto solver = new g2o::OptimizationAlgorithmLevenberg(g2o::make_unique<BlockSolverType>(g2o::make_unique<LinearSolverType>()));
+        g2o::SparseOptimizer optimizer;
+        optimizer.setAlgorithm(solver);
 
-    VertexPose *vertex_pose = new VertexPose();
-    vertex_pose->setId(0);
-    vertex_pose->setEstimate(SE3());
-    optimizer.addVertex(vertex_pose);
+        VertexPose *vertex_pose = new VertexPose();
+        vertex_pose->setId(0);
+        vertex_pose->setEstimate(SE3());
+        optimizer.addVertex(vertex_pose);
 
-    int index = 1;
-    std::vector<EdgeProjectionPoseOnly *> edges;
-    for(int i = 0; i < _goodmatchepoints.size(); i++) {
-            EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(Vec3(_goodmatchepoints(i,lastframe)->get3DPoint()));
+        int index = 1;
+        std::vector<EdgeProjectionPoseOnly *> edges;
+
+        std::cout << "last points " << lastfeaturepoints.size() << std::endl;
+        std::cout << "this points " << _featurepoints.size() << std::endl;
+
+        for(int i = 0; i < _goodmatchepoints.size(); i++) {
+            EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
             edge->setId(index);
             edge->setVertex(0, vertex_pose);
-            edge->setMeasurement(Vec3(_goodmatchepoints(i,lastframe)->get3DPoint()));
-            edge->setInformation(Eigen::Matrix2d::Identity());
+            edge->setMeasurement(get3DPoint(_featurepoints[_goodmatchepoints[i].queryIdx].pt).cast<double>());
+            edge->setInformation(Eigen::Matrix3d::Identity());
             edge->setRobustKernel(new g2o::RobustKernelHuber);
             edges.push_back(edge);
             optimizer.addEdge(edge);
             index++;
+            
+            std::cout << "last index " << _goodmatchepoints[i].queryIdx << std::endl;
+            std::cout << "this index " << _goodmatchepoints[i].queryIdx << std::endl;
         }
-    }
-
-    const double chi2_th = 5.991;
-    int cnt_outlier = 0;
-    for(int iteration = 0; iteration < 4; ++iteration)
-    {
-        vertex_pose->setEstimate(current_frame_->Pose());
+        vertex_pose->setEstimate(pose_estimate);
         optimizer.initializeOptimization();
-        optimizer.optimize(10);
-        cnt_outlier = 0;
+        optimizer.optimize(30);
 
-        for(size_t i = 0; i < edges.size(); ++i)
-        {
-            auto e = edges[i];
-            if(features[i]->is_outlier_)
-            {
-                e->computeError();
-            }
-            if(e->chi2() > chi2_th)
-            {
-                features[i]->is_outlier_ = true;
-                e->setLevel(1);
-                cnt_outlier++;
-            }
-            else
-            {
-                features[i]->is_outlier_ = false;
-                e->setLevel(0);
-            }
-            if(iteration == 2)
-            {
-                e->setRobustKernel(nullptr);
-            }
-        }
+        _pose  = pose_estimate.matrix().cast<float>();
+        std::cout << _pose << std::endl;
+    }
+    else
+    {
+        _pose = lastframe->getPose();
+        std::cout << "not enough good match, optimize failed" << std::endl;
+        return -3;
     }
 
-
-    _pose = pose_estimate;
+    return 0;
 }
 
 

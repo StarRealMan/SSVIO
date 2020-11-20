@@ -29,13 +29,21 @@ public:
     bool Optimize(Frame::Ptr lastframe);
     void getGoodMatch(std::vector<cv::DMatch>& goodmatchepoints);
     Eigen::Matrix4f getPose();
+    void getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints);
+    void getBriefdesc(cv::Mat& briefdesc);
+    Eigen::Vector3f get3DPoint(cv::Point2f imgpos);
 
 private:
 
     Xtion_Camera::Ptr _framecam;
+    float _inner_cx = 160.5912, _inner_cy = 120.4792,
+          _inner_fx = 253.0589, _inner_fy = 254.1649,
+          _inv_inner_fx = 0.003951649, _inv_inner_fy = 0.003934454;
 
     std::mutex _match_mtx;
     std::mutex _pose_mtx;
+    std::mutex _featurepoints_mtx;
+    std::mutex _briefdesc_mtx;
 
     cv::Mat _rgbframe;
     cv::Mat _dframe;
