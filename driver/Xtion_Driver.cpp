@@ -133,6 +133,7 @@ cv::Mat Xtion_Camera::getRGBImage()
 
 pcl::PointXYZRGB Xtion_Camera::getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix4f trans)
 {
+
     Eigen::Vector4f temp;
     pcl::PointXYZRGB rgb3dpoint;
 
@@ -196,7 +197,7 @@ void Xtion_Camera::grab()
     {
         std::lock_guard<std::mutex> lck(_dimage_mtx);
         cv::Mat cvRawImg16U(_onidImage.getHeight(), _onidImage.getWidth(), CV_16UC1, (void*)_onidImage.getData());
-        cvRawImg16U.convertTo(_dImage, CV_8U, 255.0/(_streamDepth.getMaxPixelValue()));
+        cvRawImg16U.convertTo(_dImage, CV_16U, 65535.0/(_streamDepth.getMaxPixelValue()));
         cv::flip(_dImage,_dImage,1);
         Depth_OK = true;
     }

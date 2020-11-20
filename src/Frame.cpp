@@ -94,7 +94,7 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         return -2;
     }
    
-        if(_goodmatchepoints.size() > 30)
+    if(_goodmatchepoints.size() > 30)
     {
         SE3 pose_estimate;
         std::vector<cv::KeyPoint> lastfeaturepoints;
@@ -112,24 +112,20 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         optimizer.addVertex(vertex_pose);
 
         int index = 1;
-        std::vector<EdgeProjectionPoseOnly *> edges;
-
-        std::cout << "last points " << lastfeaturepoints.size() << std::endl;
-        std::cout << "this points " << _featurepoints.size() << std::endl;
-
         for(int i = 0; i < _goodmatchepoints.size(); i++) {
-            EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
+            EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(
+                                get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
+            std::cout << " world point " << std::endl;
+            std::cout << get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
             edge->setId(index);
             edge->setVertex(0, vertex_pose);
             edge->setMeasurement(get3DPoint(_featurepoints[_goodmatchepoints[i].queryIdx].pt).cast<double>());
+            std::cout << " measure point " << std::endl;
+            std::cout << get3DPoint(_featurepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
             edge->setInformation(Eigen::Matrix3d::Identity());
             edge->setRobustKernel(new g2o::RobustKernelHuber);
-            edges.push_back(edge);
             optimizer.addEdge(edge);
             index++;
-            
-            std::cout << "last index " << _goodmatchepoints[i].queryIdx << std::endl;
-            std::cout << "this index " << _goodmatchepoints[i].queryIdx << std::endl;
         }
         vertex_pose->setEstimate(pose_estimate);
         optimizer.initializeOptimization();

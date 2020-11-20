@@ -74,12 +74,8 @@ public:
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T = v->estimate();
         Eigen::Vector3d pos_cam = T * _pointworld;
-        double X = pos_cam[0];
-        double Y = pos_cam[1];
-        double Z = pos_cam[2];
-        double Zinv = 1.0 / (Z + 1e-18);
-        double Zinv2 = Zinv * Zinv;
-        //_jacobianOplusXi << ;
+        _jacobianOplusXi.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
+        _jacobianOplusXi.block<3,3>(0,3) =  SO3::hat(pos_cam);
     }
 
     virtual bool read(std::istream &in) override
