@@ -32,8 +32,8 @@
 *.app
 
 # Generated file
-/build
-/bin
-/lib
+build
+bin
+lib
 
 
