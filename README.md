@@ -11,14 +11,14 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 * Pangolin
 
 ## Usage
-* Go to YOUR_DIRECTORY/
+* Go to {YOUR_DIRECTORY}/
 * Run following code
     mkdir build
     cd ./build
     cmake ..
     make
     sudo make install
-* After generating bin file, go to YOUR_DIRECTORY/bin
+* After generating bin file, go to {YOUR_DIRECTORY}/bin
 * Run following code
     ./run_visual_reconstruct
 
