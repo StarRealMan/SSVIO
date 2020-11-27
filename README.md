@@ -32,7 +32,7 @@ After running ./run_visual_reconstruct, you will see three windows:
 * Depth for depth image
 * PointCloud for PointCloud viewer
 
-Press "Esc" at RGB window or press ctrl-c at terminal to stop the program
+Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Bug
 * Sometimes go into error with code "segmentation fault"

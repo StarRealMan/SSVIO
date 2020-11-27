@@ -35,5 +35,7 @@
 /build
 /bin
 /lib
+/.vscod
+*.code-workspace
 
 
