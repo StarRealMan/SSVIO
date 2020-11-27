@@ -112,7 +112,8 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         optimizer.addVertex(vertex_pose);
 
         int index = 1;
-        for(int i = 0; i < _goodmatchepoints.size(); i++) {
+        for(int i = 0; i < _goodmatchepoints.size(); i++)
+        {
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(
                                 get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
             std::cout << " world point " << std::endl;

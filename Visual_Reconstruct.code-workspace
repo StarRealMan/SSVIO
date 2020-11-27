@@ -71,6 +71,7 @@
 			"hash_set": "cpp",
 			"random": "cpp",
 			"*.ipp": "cpp"
-		}
+		},
+		"editor.fontSize": 17
 	}
 }
