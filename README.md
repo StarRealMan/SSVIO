@@ -22,7 +22,9 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 ```
 * After generating bin file, go to {YOUR_DIRECTORY}/bin
 * Run following code
+```
     ./run_visual_reconstruct
+```
 
 ## Visualization
 After running ./run_visual_reconstruct, you will see three windows:
