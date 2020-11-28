@@ -4,7 +4,6 @@ int main(int argc,char** argv)
 {
     cv::Mat Image1,Image2;
     std::string reading_data_num1,reading_data_num2;
-    cv::namedWindow("img_match", cv::WINDOW_NORMAL);
     
     if(argc < 2)
     {
@@ -13,7 +12,7 @@ int main(int argc,char** argv)
     }
 
     reading_data_num1 = argv[1];
-    reading_data_num1 = argv[2];
+    reading_data_num2 = argv[2];
 
     Image1 = cv::imread("../savings/rgb/rgb"+ reading_data_num1 + ".jpg");
     Image2 = cv::imread("../savings/rgb/rgb"+ reading_data_num2 + ".jpg");
@@ -40,7 +39,7 @@ int main(int argc,char** argv)
     std::vector<cv::KeyPoint> featurepoints2;
     cv::Mat briefdesc2;
     std::vector<cv::DMatch> goodmatchepoints2;
-    cv::cvtColor(Image1, grayImage2, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(Image2, grayImage2, cv::COLOR_BGR2GRAY);
     fastdetect->detect(grayImage2, featurepoints2);
     briefext->compute(grayImage2, featurepoints2, briefdesc2);
 
@@ -75,8 +74,9 @@ int main(int argc,char** argv)
 
     std::cout << "Found " << goodmatchepoints.size() << " matched points" << std::endl;
     cv::Mat img_match;
+    cv::namedWindow("img_match", cv::WINDOW_NORMAL);
     cv::drawMatches(grayImage1, featurepoints1, grayImage2, featurepoints2, goodmatchepoints, img_match);
-    cv::imshow("img_match ", img_match);
+    cv::imshow("img_match", img_match);
     cv::imwrite("match.jpg", img_match);
     cv::waitKey(0);
     return 0;
