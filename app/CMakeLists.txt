@@ -19,3 +19,10 @@ target_link_libraries(run_saving_data
                       xtion_driver
                       visual_recon
                       ${THIRD_PARTY_LIBS})
+
+add_executable(run_feature_match
+               run_feature_match.cpp)
+
+target_link_libraries(run_feature_match
+                      visual_recon
+                      ${THIRD_PARTY_LIBS})
