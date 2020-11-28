@@ -23,15 +23,22 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 * After generating bin file, go to {YOUR_DIRECTORY}/bin
 * Run following code
 
+### Visual Reconstruction
 visual reconstruction app:
 ```
     ./run_visual_reconstruct
 ```
+### Saving Data
 photo shooting and data saving
 ```
     ./run_saving_data
 ```
-
+Press "t" to take photo and save at ./savings
+Run  
+```
+    bash ./removall.sh
+```
+to remove all the saved files
 
 ## Visualization
 After running ./run_visual_reconstruct, you will see three windows:

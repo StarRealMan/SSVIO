@@ -1,6 +1,4 @@
 #include "normal_include.h"
-#include <pcl/io/pcd_io.h>
-
 
 int main(int argc,char** argv)
 {
@@ -9,14 +7,16 @@ int main(int argc,char** argv)
 	MyViewer::Ptr viewer(new MyViewer(xtion_cam));
 	std::cout << "viewer init ok!" << std::endl;
 	int saving_data_num = 0;
+  	pcl::PCDWriter Pclwriter;
 
 	while(viewer->getKeyVal() != 27 )
 	{
 		if(viewer->getKeyVal() == 't')
 		{
-			cv::imwrite("../savings/rgb" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getRGBImage());
-			cv::imwrite("../savings/depth" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getDImage());
-			xtion_cam->getRGB3DPoint();
+			cv::imwrite("../savings/rgb/rgb" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getRGBImage());
+			cv::imwrite("../savings/depth/depth" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getDImage());
+  			Pclwriter.write("../savings/pointcloud/pointcloud" + std::to_string(saving_data_num) + ".pcd",*(xtion_cam->getRGBCloud()));
+			saving_data_num++;
 		}
 	}
 	
