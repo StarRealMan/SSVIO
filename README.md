@@ -34,9 +34,10 @@ photo shooting and data saving
     ./run_saving_data
 ```
 Press "t" to take photo and save at ./savings
-Run  
+
+Run at project directory
 ```
-    bash ./removall.sh
+    bash ./removedata.sh
 ```
 to remove all the saved files
 
