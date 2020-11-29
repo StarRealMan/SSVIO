@@ -3,7 +3,7 @@
 VO::VO(Xtion_Camera::Ptr camera)
 {
     _vocam = camera;
-
+    _map = std::make_shared<Map>(_vocam);
     _poses.push_back(Eigen::Matrix4f::Identity());
     _bfmatcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
     _vorunning.store(true);
@@ -12,7 +12,8 @@ VO::VO(Xtion_Camera::Ptr camera)
 
 VO::~VO()
 {
-
+    pcl::PCDWriter Pclwriter;
+    Pclwriter.write("../map.pcd",*(_map->getMapPointCloud()));
 }
 
 Eigen::Matrix4f VO::Optimize()
@@ -105,6 +106,7 @@ Eigen::Matrix4f VO::Optimize()
     return pose;
 }
 
+
 void VO::VOLoop()
 {
     std::vector<cv::DMatch> goodmatch;
@@ -129,7 +131,7 @@ void VO::VOLoop()
             {
                 pose = Optimize();
                 _poses.push_back(_poses[-1]*pose);
-                // Map
+                _map->UpdateMap(_poses[-1]);
             }
             _lastframe = _frame;
             auto t2 = std::chrono::steady_clock::now();

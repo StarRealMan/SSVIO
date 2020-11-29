@@ -2,7 +2,7 @@ add_library(visual_recon SHARED
             Reconstruct.cpp
             Visual_Odometry.cpp
             Frame.cpp
-            # Map.cpp
+            Map.cpp
             Viewer.cpp)
 
 target_link_libraries(visual_recon

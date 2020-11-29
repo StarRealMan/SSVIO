@@ -15,7 +15,7 @@
 
 #include "Xtion_Driver.h"
 #include "Frame.h"
-// #include "Map.h"
+#include "Map.h"
 
 class VO
 {
@@ -27,6 +27,7 @@ public:
     VO(){};
     ~VO();
 
+    pcl::PointXYZRGB NewPoint_Generate(ushort u, ushort v);
     Eigen::Matrix4f Optimize();
     void VOLoop();
     void VOStop();
@@ -35,7 +36,7 @@ private:
     Xtion_Camera::Ptr _vocam;
     Frame::Ptr _frame;
     Frame::Ptr _lastframe;
-    //Map::Ptr _map;
+    Map::Ptr _map;
 
     bool _InitRdy = false;
 

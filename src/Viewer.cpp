@@ -4,7 +4,7 @@ MyViewer::MyViewer(Xtion_Camera::Ptr camera):_pclviewer("Simple Cloud Viewer")
 {
  	cv::namedWindow("Depth",cv::WINDOW_NORMAL);
 	cv::namedWindow("RGB",cv::WINDOW_NORMAL);
-
+    
     _viewerCam = camera;
     
     _viewerrunning.store(true);

@@ -47,6 +47,7 @@ feature matching app:
     ./run_feature_match
 ```
 input saved data num * 2
+
 output matched feature points
 
 pose optimization:
@@ -54,6 +55,7 @@ pose optimization:
     ./run_g2o_optim
 ```
 input saved data num * 2
+
 output pose and matched feature points
 
 ## Visualization
