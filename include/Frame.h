@@ -53,7 +53,6 @@ private:
     cv::Mat _briefdesc;
     cv::Ptr<cv::FeatureDetector> _fastdetect;
     cv::Ptr<cv::DescriptorExtractor> _briefext;
-
 };
 
 #endif

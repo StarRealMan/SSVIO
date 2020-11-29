@@ -38,8 +38,7 @@ public:
     virtual void oplusImpl(const double *update) override
     {
         Eigen::Matrix<double, 6, 1> update_eigen;
-        update_eigen << update[0], update[1], update[2], update[3], update[4],
-            update[5];
+        update_eigen << update[0], update[1], update[2], update[3], update[4],update[5];
         _estimate = SE3::exp(update_eigen) * _estimate;
     }
 
@@ -59,7 +58,7 @@ class EdgeProjectionPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Vector3d, Ver
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeProjectionPoseOnly(const Eigen::Vector3d &pointworld):_pointworld(pointworld){}
+    EdgeProjectionPoseOnly(const Eigen::Vector3d &pointworld):BaseUnaryEdge(),_pointworld(pointworld){}
 
     virtual void computeError() override
     {
@@ -94,3 +93,4 @@ private:
 
 
 #endif
+

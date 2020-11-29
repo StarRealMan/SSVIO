@@ -30,12 +30,10 @@ void MyViewer::ViewerLoop()
         cv::Mat RGB_IMG = _viewerCam->getRGBImage();
         if(!RGB_IMG.empty())
         {
-            // std::cout << "view start" << std::endl;
             cv::imshow("RGB", RGB_IMG);
             cv::imshow("Depth", _viewerCam->getDImage());
             _pclviewer.showCloud(_viewerCam->getRGBCloud());
             _keyVal = cv::waitKey(33);
-            // std::cout << "view ok" << std::endl;
         }
     }
 }

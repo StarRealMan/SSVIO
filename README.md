@@ -41,6 +41,21 @@ Run at project directory
 ```
 to remove all the saved files
 
+### Feature matching and Pose optimization
+feature matching app:
+```
+    ./run_feature_match
+```
+input saved data num * 2
+output matched feature points
+
+pose optimization:
+```
+    ./run_g2o_optim
+```
+input saved data num * 2
+output pose and matched feature points
+
 ## Visualization
 After running ./run_visual_reconstruct, you will see three windows:
 * RGB for RGB image
@@ -50,13 +65,10 @@ After running ./run_visual_reconstruct, you will see three windows:
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Bug
-* Sometimes go into error with code "segmentation fault"
-* Calculating the corresponding point to be at the same place
-* Finding the feature point at (0,0,0)
-* Somtimes found good match point more than feature points like:
-75
-63
-Totally found 75 good match point
+* Sometimes image grabbed has error (maybe lock error ?)
+* New method to pick good match points
+* Poor match points need to be kicked while optimizing dynamicaly
+
 
 
 ## Author

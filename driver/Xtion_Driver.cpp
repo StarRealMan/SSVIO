@@ -22,7 +22,7 @@ Xtion_Camera::Xtion_Camera()
     showdevice();
     std::string uri = "";
     vendor = "PrimeSense";      //xtion1
-    for(int i = 0; i < _deviceList.getSize(); ++i)
+    for(ushort i = 0; i < _deviceList.getSize(); ++i)
     {
         const openni::DeviceInfo &rDevInfo = _deviceList[i];
         if (vendor == rDevInfo.getVendor())
@@ -132,8 +132,9 @@ cv::Mat Xtion_Camera::getRGBImage()
 }
 
 pcl::PointXYZRGB Xtion_Camera::getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix4f trans)
-{
-
+{        
+    std::lock_guard<std::mutex> lck_d(_dimage_mtx);
+    std::lock_guard<std::mutex> lck_rgb(_rgbimage_mtx);
     Eigen::Vector4f temp;
     pcl::PointXYZRGB rgb3dpoint;
 
@@ -169,7 +170,7 @@ void Xtion_Camera::setGrabRdyfalse()
 void Xtion_Camera::showdevice()
 {
     std::cout << "电脑上连接着 " << _deviceList.getSize() << " 个体感设备." << std::endl;
-    for (int i = 0; i < _deviceList.getSize(); ++i)
+    for(uchar i = 0; i < _deviceList.getSize(); ++i)
     {
         std::cout << "设备 " << i << std::endl;
         const openni::DeviceInfo &rDevInfo = _deviceList[i];
@@ -211,14 +212,11 @@ void Xtion_Camera::grab()
     }
     if(Depth_OK && RGB_OK)
     {
-        std::lock_guard<std::mutex> lck_d(_dimage_mtx);
-        std::lock_guard<std::mutex> lck_rgb(_rgbimage_mtx);
-        for(int u = 0; u < _dImage.cols; u++)
+        for(ushort u = 0; u < _dImage.cols; u++)
         {
-            for(int v = 0; v < _dImage.rows; v++)
+            for(ushort v = 0; v < _dImage.rows; v++)
             {
                 int i = u * _dImage.rows + v;
-                // std::cout << i << std::endl;
                 _rgbCloud->points[i] = getRGB3DPoint(u,v,Eigen::Matrix4f::Identity());
             }
         }
@@ -237,9 +235,7 @@ void Xtion_Camera::GrabLoop()
 {
     while(_grabrunning.load())
     {
-        // std::cout << "grab start" << std::endl;
         grab();
-        // std::cout << "grab ok" << std::endl;
     }
 }
 

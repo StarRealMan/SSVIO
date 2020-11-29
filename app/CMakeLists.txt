@@ -26,3 +26,10 @@ add_executable(run_feature_match
 target_link_libraries(run_feature_match
                       visual_recon
                       ${THIRD_PARTY_LIBS})
+
+add_executable(run_g2o_optim
+               run_g2o_optim.cpp)
+
+target_link_libraries(run_g2o_optim
+                      visual_recon
+                      ${THIRD_PARTY_LIBS})

@@ -47,7 +47,7 @@ Eigen::Matrix4f VO::Optimize()
         auto min_max = std::minmax_element(matchepoints.begin(), matchepoints.end(),
                                 [](const cv::DMatch &m1, const cv::DMatch &m2) { return m1.distance < m2.distance; });
         double min_dist = min_max.first->distance;
-        for (int i = 0; i < matchepoints.size(); i++)
+        for(ushort i = 0; i < matchepoints.size(); i++)
         {
             if (matchepoints[i].distance <= std::max(2 * min_dist, 30.0))
             {
@@ -55,7 +55,7 @@ Eigen::Matrix4f VO::Optimize()
             }
         }
         goodmatchpoint_size = _goodmatchepoints.size();
-        std::cout << "Totally found " << goodmatchpoint_size << " good match point" << std::endl;
+        std::cout << "totally found " << goodmatchpoint_size << " good match point" << std::endl;
     }
     else
     {
@@ -73,29 +73,26 @@ Eigen::Matrix4f VO::Optimize()
         optimizer.setAlgorithm(solver);
 
         VertexPose *vertex_pose = new VertexPose();
+        vertex_pose->setEstimate(pose_estimate);
         vertex_pose->setId(0);
-        vertex_pose->setEstimate(SE3());
         optimizer.addVertex(vertex_pose);
 
-        int index = 1;
-        for(int i = 0; i < _goodmatchepoints.size(); i++)
+        for(ushort i = 0; i < _goodmatchepoints.size(); i++)
         {
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(
                                 _lastframe->get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
-            edge->setId(index);
+            edge->setId(i);
             edge->setVertex(0, vertex_pose);
             edge->setMeasurement(_frame->get3DPoint(featurepoints[_goodmatchepoints[i].queryIdx].pt).cast<double>());
             edge->setInformation(Eigen::Matrix3d::Identity());
             edge->setRobustKernel(new g2o::RobustKernelHuber);
             optimizer.addEdge(edge);
-            index++;
         }
 
-        vertex_pose->setEstimate(pose_estimate);
         optimizer.initializeOptimization();
-        optimizer.optimize(30);
+        optimizer.optimize(20);
         
-        pose = pose_estimate.matrix().cast<float>();
+        pose = vertex_pose->estimate().matrix().cast<float>();
         _frame->setPose(pose);
         std::cout << pose << std::endl;
     }
@@ -116,14 +113,12 @@ void VO::VOLoop()
         if(_vocam->isGrabRdy())
         {
             auto t1 = std::chrono::steady_clock::now();
-            // std::cout << "vo start" << std::endl;
+            std::cout << "<=============================================================>" << std::endl;
             _vocam->setGrabRdyfalse();
             Eigen::Matrix4f pose;
             
-            //_map(new Map)
             _frame = std::make_shared<Frame>(_vocam);
             _frame->UpdateFrame();
-            std::cout << "<=============================================================>" << std::endl;
             
             if(!_InitRdy)
             {
@@ -137,7 +132,6 @@ void VO::VOLoop()
                 // Map
             }
             _lastframe = _frame;
-            // std::cout << "vo ok" << std::endl;
             auto t2 = std::chrono::steady_clock::now();
             auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
             std::cout << time_used.count()*1000 << " ms per frame " << std::endl;
