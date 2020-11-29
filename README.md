@@ -29,7 +29,7 @@ visual reconstruction app:
     ./run_visual_reconstruct
 ```
 ### Saving Data
-photo shooting and data saving
+photo shooting and data saving app:
 ```
     ./run_saving_data
 ```
