@@ -53,6 +53,11 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 * Sometimes go into error with code "segmentation fault"
 * Calculating the corresponding point to be at the same place
 * Finding the feature point at (0,0,0)
+* Somtimes found good match point more than feature points like:
+75
+63
+Totally found 75 good match point
+
 
 ## Author
 

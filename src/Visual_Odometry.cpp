@@ -22,24 +22,27 @@ void VO::VOLoop()
         if(_vocam->isGrabRdy())
         {
             auto t1 = std::chrono::steady_clock::now();
-            std::cout << "vo start" << std::endl;
+            // std::cout << "vo start" << std::endl;
             _vocam->setGrabRdyfalse();
             Eigen::Matrix4f pose_estimate;
             _frame->UpdateFrame();
+            
+            std::cout << "<=============================================================>" << std::endl;
+            
             if(!_InitRdy)
             {
+                std::cout << "Initializing......" << std::endl;
                 _InitRdy = true;
             }
             else
             {
                 _frame->Optimize(_lastframe);
-                _frame->getGoodMatch(goodmatch);
-                std::cout << goodmatch.size() << std::endl;
+                //_frame->getGoodMatch(goodmatch);
                 _poses.push_back(_poses[-1]*_frame->getPose());
                 // Map
             }
             memcpy(_lastframe.get(),_frame.get(),sizeof(Frame));
-            std::cout << "vo ok" << std::endl;
+            // std::cout << "vo ok" << std::endl;
             auto t2 = std::chrono::steady_clock::now();
             auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
             std::cout << time_used.count()*1000 << " ms per frame " << std::endl;

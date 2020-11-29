@@ -54,6 +54,7 @@ void Frame::UpdateFrame()
     _dframe = _framecam->getDImage();
     _rgbcloud = _framecam->getRGBCloud();
     _goodmatchepoints.clear();
+    _featurepoints.clear();
     cv::Mat grayframe;
     cv::cvtColor(_rgbframe, grayframe, cv::COLOR_BGR2GRAY);
     _fastdetect->detect(grayframe, _featurepoints);
@@ -63,6 +64,10 @@ void Frame::UpdateFrame()
 bool Frame::Optimize(Frame::Ptr lastframe)
 {
     Eigen::Matrix4f pose_estimate;
+    int goodmatchpoint_size;
+
+    std::cout << _featurepoints.size() << std::endl;
+    std::cout << lastframe->_featurepoints.size() << std::endl;
 
     std::vector<cv::DMatch> matchepoints;
     if(!_briefdesc.empty() && !(lastframe->_briefdesc.empty()))
@@ -74,7 +79,6 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         std::cout << "find feature failed" << std::endl;
         return -1;
     }
-    
     if(!matchepoints.empty())
     {
         auto min_max = std::minmax_element(matchepoints.begin(), matchepoints.end(),
@@ -87,14 +91,16 @@ bool Frame::Optimize(Frame::Ptr lastframe)
                 _goodmatchepoints.push_back(matchepoints[i]);
             }
         }
+        goodmatchpoint_size = _goodmatchepoints.size();
+        std::cout << "Totally found " << goodmatchpoint_size << " good match point" << std::endl;
     }
     else
     {
         std::cout << "match failed" << std::endl;
         return -2;
     }
-   
-    if(_goodmatchepoints.size() > 30)
+
+    if(goodmatchpoint_size > 30)
     {
         SE3 pose_estimate;
         std::vector<cv::KeyPoint> lastfeaturepoints;
@@ -116,13 +122,13 @@ bool Frame::Optimize(Frame::Ptr lastframe)
         {
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(
                                 get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>());
-            std::cout << " world point " << std::endl;
-            std::cout << get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
+            // std::cout << " world point " << std::endl;
+            // std::cout << get3DPoint(lastfeaturepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
             edge->setId(index);
             edge->setVertex(0, vertex_pose);
             edge->setMeasurement(get3DPoint(_featurepoints[_goodmatchepoints[i].queryIdx].pt).cast<double>());
-            std::cout << " measure point " << std::endl;
-            std::cout << get3DPoint(_featurepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
+            // std::cout << " measure point " << std::endl;
+            // std::cout << get3DPoint(_featurepoints[_goodmatchepoints[i].trainIdx].pt).cast<double>() << std::endl;
             edge->setInformation(Eigen::Matrix3d::Identity());
             edge->setRobustKernel(new g2o::RobustKernelHuber);
             optimizer.addEdge(edge);

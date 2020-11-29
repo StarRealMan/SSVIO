@@ -237,9 +237,9 @@ void Xtion_Camera::GrabLoop()
 {
     while(_grabrunning.load())
     {
-        std::cout << "grab start" << std::endl;
+        // std::cout << "grab start" << std::endl;
         grab();
-        std::cout << "grab ok" << std::endl;
+        // std::cout << "grab ok" << std::endl;
     }
 }
 
