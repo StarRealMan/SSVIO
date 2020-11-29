@@ -78,6 +78,16 @@ int main(int argc,char** argv)
     cv::drawMatches(grayImage1, featurepoints1, grayImage2, featurepoints2, goodmatchepoints, img_match);
     cv::imshow("img_match", img_match);
     cv::imwrite("match.jpg", img_match);
+
+    for(int i = 0;i<goodmatchepoints.size();i++)
+    {
+        std::cout << "<=============================================================>" << std::endl;
+        std::cout << "train point" << std::endl;
+        std::cout << featurepoints1[goodmatchepoints[i].trainIdx].pt << std::endl;
+        std::cout << "query point" << std::endl;
+        std::cout << featurepoints2[goodmatchepoints[i].queryIdx].pt << std::endl;
+    }
+    
     cv::waitKey(0);
     return 0;
 }

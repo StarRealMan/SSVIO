@@ -26,9 +26,8 @@ public:
     ~Frame();
 
     void UpdateFrame();
-    bool Optimize(Frame::Ptr lastframe);
-    void getGoodMatch(std::vector<cv::DMatch>& goodmatchepoints);
     Eigen::Matrix4f getPose();
+    void setPose(Eigen::Matrix4f pose);
     void getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints);
     void getBriefdesc(cv::Mat& briefdesc);
     Eigen::Vector3f get3DPoint(cv::Point2f imgpos);
@@ -52,10 +51,8 @@ private:
     Eigen::Matrix4f _pose;
     std::vector<cv::KeyPoint> _featurepoints;
     cv::Mat _briefdesc;
-    std::vector<cv::DMatch> _goodmatchepoints;
     cv::Ptr<cv::FeatureDetector> _fastdetect;
     cv::Ptr<cv::DescriptorExtractor> _briefext;
-    cv::Ptr<cv::DescriptorMatcher> _bfmatcher;
 
 };
 

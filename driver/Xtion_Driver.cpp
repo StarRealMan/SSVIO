@@ -98,7 +98,7 @@ Xtion_Camera::Xtion_Camera()
     _inv_inner_fx = 1/_inner_fx;
     _inv_inner_fy = 1/_inner_fy;
 
-    _rgbCloud=boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
+    _rgbCloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
 
     _rgbCloud->width = _height * _width;
     _rgbCloud->height = 1;

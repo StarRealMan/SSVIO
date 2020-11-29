@@ -27,6 +27,7 @@ public:
     VO(){};
     ~VO();
 
+    Eigen::Matrix4f Optimize();
     void VOLoop();
     void VOStop();
 
@@ -42,8 +43,9 @@ private:
 
     std::atomic<bool> _vorunning;
     std::thread _vothread;
-
+    cv::Ptr<cv::DescriptorMatcher> _bfmatcher;
     
+    std::vector<cv::DMatch> _goodmatchepoints;
 };
 
 #endif
