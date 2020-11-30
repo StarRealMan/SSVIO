@@ -64,8 +64,8 @@ public:
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T = v->estimate();
-        Eigen::Vector3d pointcam = T * _pointworld;
-        _error = _measurement - pointcam;
+        Eigen::Vector3d pointcam_world = T * _measurement;
+        _error = _pointworld - pointcam_world;
     }
 
     virtual void linearizeOplus() override

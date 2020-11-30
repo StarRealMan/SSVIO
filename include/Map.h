@@ -7,6 +7,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
+#include <pcl/common/transforms.h>
 
 #include <iostream>
 #include <vector>
@@ -25,6 +26,7 @@ public:
     ~Map();
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr getMapPointCloud();
+    void PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, Eigen::Matrix4f trans);
     void UpdateMap(Eigen::Matrix4f pose);
 
 private:

@@ -29,36 +29,39 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr Map::getMapPointCloud()
     return _mapcloud;
 }
 
+void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, Eigen::Matrix4f trans)
+{
+    Eigen::Matrix3f rotation = trans.block<3,3>(0,0);
+    Eigen::Vector3f translation = trans.block<3,1>(0,3);
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform.rotate(rotation);
+    transform.translate(translation);
+
+    pcl::transformPointCloud (*(_mapcam->getRGBCloud()), *new_cloud, transform);
+}
+
+
 void Map::UpdateMap(Eigen::Matrix4f pose)
 {
     int origin_poin_num = _mapcloud->width;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PCLPointCloud2::Ptr cloud2(new pcl::PCLPointCloud2 ());
-    pcl::PCLPointCloud2::Ptr cloud_filtered2(new pcl::PCLPointCloud2 ());
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     _mapcloud->width = _mapcloud->width + _height *  _width;
     _mapcloud->height = 1;
     _mapcloud->points.resize(_mapcloud->width * _mapcloud->height);
 
-    for(ushort u = 0; u < _width; u++)
-    {
-        for(ushort v = 0; v < _height; v++)
-        {
-            int i = u * _height + v;
-            _mapcloud->points[i+origin_poin_num] = _mapcam->getRGB3DPoint(u,v,pose);
-        }
-    }
+    PointcloudTransform(new_cloud, pose);
 
-    pcl::toPCLPointCloud2(*_mapcloud,*cloud2);
-    pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
-    sor.setInputCloud(cloud2);
-    sor.setLeafSize (0.1f, 0.1f, 0.1f);
-    sor.filter (*cloud_filtered2);
-    pcl::fromPCLPointCloud2(*cloud_filtered2,*cloud_filtered);
+    *_mapcloud += *new_cloud;
+
+    pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+    sor.setInputCloud(_mapcloud);
+    sor.setLeafSize(100.0f, 100.0f, 100.0f);
+    sor.filter(*cloud_filtered);
+
     *_mapcloud = *cloud_filtered;
-
 }
-
 
 
     

@@ -18,7 +18,7 @@ int main(int argc,char** argv)
     std::string reading_data_num1,reading_data_num2;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud2 (new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud1 (new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
   	pcl::PCDWriter Pclwriter;
     pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
@@ -84,7 +84,7 @@ int main(int argc,char** argv)
         double min_dist = min_max.first->distance;
         for(ushort i = 0; i < matchepoints.size(); i++)
         {
-            if (matchepoints[i].distance <= std::max(1.2 * min_dist, 10.0))
+            if (matchepoints[i].distance <= std::max(1.5 * min_dist, 20.0))
             {
                 goodmatchepoints.push_back(matchepoints[i]);
             }
@@ -136,17 +136,17 @@ int main(int argc,char** argv)
     pose = vertex_pose->estimate().matrix().cast<float>();
     std::cout << pose << std::endl;
 
-    PointcloudTransform(cloud2, new_cloud2, pose);
+    PointcloudTransform(cloud1, new_cloud1, pose);
 
-    *cloud1 += *new_cloud2;
+    *cloud2 += *new_cloud1;
 
     pcl::VoxelGrid<pcl::PointXYZRGB> sor;
-    sor.setInputCloud(cloud1);
+    sor.setInputCloud(cloud2);
     sor.setLeafSize(100.0f, 100.0f, 100.0f);
     sor.filter(*cloud_filtered);
 
-    Pclwriter.write("../savings/pointcloud/frame_joint.pcd",*cloud1);
-	viewer.showCloud(cloud1);
+    Pclwriter.write("../savings/pointcloud/frame_joint.pcd",*cloud2);
+	viewer.showCloud(cloud2);
 
     cv::waitKey(0);
 
