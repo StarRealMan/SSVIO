@@ -33,3 +33,11 @@ add_executable(run_g2o_optim
 target_link_libraries(run_g2o_optim
                       visual_recon
                       ${THIRD_PARTY_LIBS})
+
+
+add_executable(run_frame_jointment
+               run_frame_jointment.cpp)
+
+target_link_libraries(run_frame_jointment
+                      visual_recon
+                      ${THIRD_PARTY_LIBS})

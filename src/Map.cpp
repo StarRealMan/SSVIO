@@ -52,7 +52,7 @@ void Map::UpdateMap(Eigen::Matrix4f pose)
     pcl::toPCLPointCloud2(*_mapcloud,*cloud2);
     pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
     sor.setInputCloud(cloud2);
-    sor.setLeafSize (1.0f, 1.0f, 1.0f);
+    sor.setLeafSize (0.1f, 0.1f, 0.1f);
     sor.filter (*cloud_filtered2);
     pcl::fromPCLPointCloud2(*cloud_filtered2,*cloud_filtered);
     *_mapcloud = *cloud_filtered;

@@ -24,25 +24,26 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 * Run following code
 
 ### Visual Reconstruction
-visual reconstruction app:
+* visual reconstruction app:
 ```
     ./run_visual_reconstruct
 ```
+map pointcloud data will be saved at {YOUR_DIRECTORY}/savings/map.pcd
 ### Saving Data
-photo shooting and data saving app:
+* photo shooting and data saving app:
 ```
     ./run_saving_data
 ```
-Press "t" to take photo and save at ./savings
+Press "t" to take photo and save at {YOUR_DIRECTORY}/savings
 
-Run at project directory
+* Run at {YOUR_DIRECTORY}
 ```
     bash ./removedata.sh
 ```
 to remove all the saved files
 
-### Feature matching and Pose optimization
-feature matching app:
+### Feature matching Pose optimization and frame jointment
+* feature matching app:
 ```
     ./run_feature_match
 ```
@@ -50,13 +51,21 @@ input saved data num * 2
 
 output matched feature points
 
-pose optimization:
+* pose optimization:
 ```
     ./run_g2o_optim
 ```
 input saved data num * 2
 
 output pose and matched feature points
+
+* frame jointment:
+```
+    ./run_frame_jointment
+```
+input saved data num * 2
+
+output frame_joint.pcd saved at  {YOUR_DIRECTORY}/savings/pointcloud
 
 ## Visualization
 After running ./run_visual_reconstruct, you will see three windows:
