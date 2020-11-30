@@ -13,7 +13,7 @@ VO::VO(Xtion_Camera::Ptr camera)
 VO::~VO()
 {
     pcl::PCDWriter Pclwriter;
-    Pclwriter.write("../map.pcd",*(_map->getMapPointCloud()));
+    Pclwriter.write("../savings/map.pcd",*(_map->getMapPointCloud()));
 }
 
 Eigen::Matrix4f VO::Optimize()
