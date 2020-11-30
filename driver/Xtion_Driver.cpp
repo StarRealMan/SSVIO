@@ -145,9 +145,10 @@ pcl::PointXYZRGB Xtion_Camera::getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix
             depth, 1.0;
 
     temp = trans * temp;
-    rgb3dpoint.x = temp[0] / 1000.0;
-    rgb3dpoint.y = temp[1] / 1000.0;
-    rgb3dpoint.z = temp[2] / 1000.0;
+    rgb3dpoint.x = temp[0];
+    rgb3dpoint.y = temp[1];
+    rgb3dpoint.z = temp[2];
+    // 注意尺度单位为深度传感器LSB
     rgb3dpoint.b = _rgbImage.at<cv::Vec3b>(pos_y,pos_x)[0];
     rgb3dpoint.g = _rgbImage.at<cv::Vec3b>(pos_y,pos_x)[1];
     rgb3dpoint.r = _rgbImage.at<cv::Vec3b>(pos_y,pos_x)[2];

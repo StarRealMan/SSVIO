@@ -75,6 +75,8 @@ After running ./run_visual_reconstruct, you will see three windows:
 
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
+*Note that the metric of pointcloud is same as the LSB of depth sensor!*
+
 ## Bug
 * Sometimes image grabbed has error (maybe lock error ?)
 * New method to pick good match points
