@@ -1,9 +1,13 @@
 #include "Visual_Odometry.h"
 
-VO::VO(Xtion_Camera::Ptr camera)
+VO::VO(Xtion_Camera::Ptr camera, Config::Ptr config)
 {
     _vocam = camera;
-    _map = std::make_shared<Map>(_vocam);
+    _featurepoint_coe = config->GetParam<float>("Featurepoint_coe");
+    _featurepoint_max = config->GetParam<float>("Featurepoint_max");
+    _goodmatch_thresh = config->GetParam<uchar>("Goodmatch_thresh");
+    _optim_round = config->GetParam<uchar>("Optim_round");
+    _map = std::make_shared<Map>(_vocam,config);
     _poses.push_back(Eigen::Matrix4f::Identity());
     _bfmatcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
     _vorunning.store(true);
@@ -47,10 +51,10 @@ Eigen::Matrix4f VO::Optimize()
     {
         auto min_max = std::minmax_element(matchepoints.begin(), matchepoints.end(),
                                 [](const cv::DMatch &m1, const cv::DMatch &m2) { return m1.distance < m2.distance; });
-        double min_dist = min_max.first->distance;
+        float min_dist = min_max.first->distance;
         for(ushort i = 0; i < matchepoints.size(); i++)
         {
-            if (matchepoints[i].distance <= std::max(2 * min_dist, 30.0))
+            if (matchepoints[i].distance <= std::max(_featurepoint_coe * min_dist, _featurepoint_max))
             {
                 _goodmatchepoints.push_back(matchepoints[i]);
             }
@@ -64,7 +68,7 @@ Eigen::Matrix4f VO::Optimize()
         return pose;
     }
 
-    if(goodmatchpoint_size > 30)
+    if(goodmatchpoint_size > _goodmatch_thresh)
     {
         typedef g2o::BlockSolver_6_3 BlockSolverType;
         typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
@@ -91,7 +95,7 @@ Eigen::Matrix4f VO::Optimize()
         }
 
         optimizer.initializeOptimization();
-        optimizer.optimize(20);
+        optimizer.optimize(_optim_round);
         
         pose = vertex_pose->estimate().matrix().cast<float>();
         _frame->setPose(pose);

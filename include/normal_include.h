@@ -4,5 +4,6 @@
 #include "Xtion_Driver.h"
 #include "Viewer.h"
 #include "Visual_Odometry.h"
+#include "config.h"
 
 #endif

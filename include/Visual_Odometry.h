@@ -16,6 +16,7 @@
 #include "Xtion_Driver.h"
 #include "Frame.h"
 #include "Map.h"
+#include "config.h"
 
 class VO
 {
@@ -23,7 +24,7 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<VO> Ptr;
 
-    VO(Xtion_Camera::Ptr camera);
+    VO(Xtion_Camera::Ptr camera, Config::Ptr config);
     VO(){};
     ~VO();
 
@@ -45,8 +46,12 @@ private:
     std::atomic<bool> _vorunning;
     std::thread _vothread;
     cv::Ptr<cv::DescriptorMatcher> _bfmatcher;
-    
     std::vector<cv::DMatch> _goodmatchepoints;
+
+    float _featurepoint_coe;
+    float _featurepoint_max;
+    uchar _goodmatch_thresh;
+    uchar _optim_round;
 };
 
 #endif

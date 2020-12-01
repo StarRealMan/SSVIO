@@ -3,7 +3,8 @@ add_library(visual_recon SHARED
             Visual_Odometry.cpp
             Frame.cpp
             Map.cpp
-            Viewer.cpp)
+            Viewer.cpp
+            config.cpp)
 
 target_link_libraries(visual_recon
                       xtion_driver

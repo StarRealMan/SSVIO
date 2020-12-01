@@ -14,6 +14,7 @@
 #include <thread>
 #include <mutex>
 
+
 class Xtion_Camera
 {
 public:

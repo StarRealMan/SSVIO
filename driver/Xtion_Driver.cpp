@@ -21,7 +21,7 @@ Xtion_Camera::Xtion_Camera()
 
     showdevice();
     std::string uri = "";
-    vendor = "PrimeSense";      //xtion1
+    vendor = "PrimeSense";
     for(ushort i = 0; i < _deviceList.getSize(); ++i)
     {
         const openni::DeviceInfo &rDevInfo = _deviceList[i];
@@ -61,16 +61,15 @@ Xtion_Camera::Xtion_Camera()
 	if(rc == openni::STATUS_OK)
 	{
 		_modeRGB.setResolution(320,240);
-		_modeRGB.setFps(30);//帧率
+		_modeRGB.setFps(30);
 		_modeRGB.setPixelFormat(openni::PIXEL_FORMAT_RGB888);
  
-		//设置深度图和彩色图的配准模式
 		if(_camera.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
 		{
-			_camera.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR); //深度到彩色图配准
+			_camera.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
 		}
  
-		rc = _streamRGB.start(); //打开彩色数据流
+		rc = _streamRGB.start();
 		if( rc != openni::STATUS_OK)
 		{
 			std::cerr << "无法打开彩色数据流："<< openni::OpenNI::getExtendedError() << std::endl;

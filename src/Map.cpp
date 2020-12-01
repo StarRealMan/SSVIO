@@ -1,8 +1,9 @@
 #include "Map.h"
 
-Map::Map(Xtion_Camera::Ptr camera)
+Map::Map(Xtion_Camera::Ptr camera, Config::Ptr config)
 {
     _mapcam = camera;
+    _voxel_size = config->GetParam<float>("Voxel_size");
     _mapcloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
     _mapcloud->width = 0;
     _mapcloud->height = 1;
@@ -43,21 +44,18 @@ void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, 
 
 void Map::UpdateMap(Eigen::Matrix4f pose)
 {
-    int origin_poin_num = _mapcloud->width;
+    std::cout << " current Map has " << _mapcloud->width << " Points!" << std::endl;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    _mapcloud->width = _mapcloud->width + _height *  _width;
-    _mapcloud->height = 1;
-    _mapcloud->points.resize(_mapcloud->width * _mapcloud->height);
-
     PointcloudTransform(new_cloud, pose);
+    std::cout << " New cloud has " << new_cloud->width << " Points!" << std::endl;
 
     *_mapcloud += *new_cloud;
 
     pcl::VoxelGrid<pcl::PointXYZRGB> sor;
     sor.setInputCloud(_mapcloud);
-    sor.setLeafSize(100.0f, 100.0f, 100.0f);
+    sor.setLeafSize(_voxel_size, _voxel_size, _voxel_size);
     sor.filter(*cloud_filtered);
 
     *_mapcloud = *cloud_filtered;

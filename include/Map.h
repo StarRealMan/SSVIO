@@ -15,6 +15,7 @@
 #include <mutex>
 
 #include "Xtion_Driver.h"
+#include "config.h"
 
 class Map
 {
@@ -22,7 +23,7 @@ public:
 
     typedef std::shared_ptr<Map> Ptr;
     
-    Map(Xtion_Camera::Ptr camera);
+    Map(Xtion_Camera::Ptr camera, Config::Ptr config);
     ~Map();
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr getMapPointCloud();
@@ -43,6 +44,7 @@ private:
     float _inner_fy;
     float _inv_inner_fx;
     float _inv_inner_fy;
+    float _voxel_size;
 };
 
 #endif
