@@ -3,6 +3,7 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 
 # REMEMBER!
 **Note that the metric of pointcloud is same as the LSB of depth sensor!**
+
 **The coordinate of camera and world is as follow(Red:X, Blue:Y, Green:Z):**
 
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/coordinate.png?raw=true)
