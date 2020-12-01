@@ -1,6 +1,11 @@
 # SSVIO
 Graduation Project: A point cloud semantic segmentation and VIO based 3D reconstruction method using RGB-D and IMU
 
+# REMEMBER!
+**Note that the metric of pointcloud is same as the LSB of depth sensor!**
+**The coordinate of camera and world is as follow(Red:X, Blue:Y, Green:Z):**
+![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/coordinate.png?raw=true)
+
 ## Requirement
 * gcc and cmake
 * OpenCV
@@ -74,8 +79,6 @@ After running ./run_visual_reconstruct, you will see three windows:
 * PointCloud for PointCloud viewer
 
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
-
-*Note that the metric of pointcloud is same as the LSB of depth sensor!*
 
 ## Bug
 * Sometimes image grabbed has error (maybe lock error ?)
