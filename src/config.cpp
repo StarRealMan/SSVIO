@@ -1,7 +1,7 @@
 #include "config.h"
 
 
-Config::Config(std::string filename)
+Config::Config(const std::string& filename)
 {
     _file = cv::FileStorage(filename.c_str(), cv::FileStorage::READ);
     if(_file.isOpened() == false)
@@ -18,8 +18,3 @@ Config::~Config()
     }
 }
 
-template <typename T>
-T Config::GetParam(std::string key)
-{
-    return T(_file[key]);
-}

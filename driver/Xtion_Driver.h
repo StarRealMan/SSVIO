@@ -28,7 +28,7 @@ public:
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr getRGBCloud();
     cv::Mat getDImage();
     cv::Mat getRGBImage();
-    pcl::PointXYZRGB getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix4f trans);
+    pcl::PointXYZRGB getRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans);
     
     bool isGrabRdy();
     void setGrabRdyfalse();

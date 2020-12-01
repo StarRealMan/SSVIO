@@ -130,7 +130,7 @@ cv::Mat Xtion_Camera::getRGBImage()
     return _rgbImage;
 }
 
-pcl::PointXYZRGB Xtion_Camera::getRGB3DPoint(int pos_x, int pos_y, Eigen::Matrix4f trans)
+pcl::PointXYZRGB Xtion_Camera::getRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans)
 {        
     std::lock_guard<std::mutex> lck_d(_dimage_mtx);
     std::lock_guard<std::mutex> lck_rgb(_rgbimage_mtx);

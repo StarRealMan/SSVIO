@@ -27,8 +27,8 @@ public:
     ~Map();
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr getMapPointCloud();
-    void PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, Eigen::Matrix4f trans);
-    void UpdateMap(Eigen::Matrix4f pose);
+    void PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud,const Eigen::Matrix4f& trans);
+    void UpdateMap(const Eigen::Matrix4f& pose);
 
 private:
 

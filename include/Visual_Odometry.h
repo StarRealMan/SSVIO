@@ -50,8 +50,8 @@ private:
 
     float _featurepoint_coe;
     float _featurepoint_max;
-    uchar _goodmatch_thresh;
-    uchar _optim_round;
+    int _goodmatch_thresh;
+    int _optim_round;
 };
 
 #endif

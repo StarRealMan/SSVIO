@@ -12,7 +12,7 @@ Frame::~Frame()
 
 }
 
-void Frame::setPose(Eigen::Matrix4f pose)
+void Frame::setPose(const Eigen::Matrix4f& pose)
 {
     std::lock_guard<std::mutex> lck(_pose_mtx);
     _pose = pose;
@@ -36,7 +36,7 @@ void Frame::getBriefdesc(cv::Mat& briefdesc)
     briefdesc = _briefdesc;
 }
 
-Eigen::Vector3f Frame::get3DPoint(cv::Point2f imgpos)
+Eigen::Vector3f Frame::get3DPoint(const cv::Point2f& imgpos)
 {
     Eigen::Matrix<float, 3, 1> temppoint;
     float depth;

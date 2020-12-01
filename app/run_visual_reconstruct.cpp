@@ -8,7 +8,7 @@ int main(int argc,char** argv)
 	std::cout << "camera init ok!" << std::endl;
 	MyViewer::Ptr viewer(new MyViewer(xtion_cam));
 	std::cout << "viewer init ok!" << std::endl;
-	VO::Ptr vo(new VO(xtion_cam,config));
+	VO::Ptr vo(new VO(xtion_cam, config));
 	std::cout << "vo init ok!" << std::endl;
 	
 

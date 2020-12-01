@@ -27,10 +27,10 @@ public:
 
     void UpdateFrame();
     Eigen::Matrix4f getPose();
-    void setPose(Eigen::Matrix4f pose);
+    void setPose(const Eigen::Matrix4f& pose);
     void getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints);
     void getBriefdesc(cv::Mat& briefdesc);
-    Eigen::Vector3f get3DPoint(cv::Point2f imgpos);
+    Eigen::Vector3f get3DPoint(const cv::Point2f& imgpos);
 
 private:
 

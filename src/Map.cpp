@@ -30,7 +30,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr Map::getMapPointCloud()
     return _mapcloud;
 }
 
-void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, Eigen::Matrix4f trans)
+void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud,const Eigen::Matrix4f& trans)
 {
     Eigen::Matrix3f rotation = trans.block<3,3>(0,0);
     Eigen::Vector3f translation = trans.block<3,1>(0,3);
@@ -42,7 +42,7 @@ void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud, 
 }
 
 
-void Map::UpdateMap(Eigen::Matrix4f pose)
+void Map::UpdateMap(const Eigen::Matrix4f& pose)
 {
     std::cout << " current Map has " << _mapcloud->width << " Points!" << std::endl;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);

@@ -20,11 +20,14 @@ public:
 
     typedef std::shared_ptr<Config> Ptr;
 
-    Config(std::string filename);
+    Config(const std::string& filename);
     ~Config();
 
     template <typename T>
-    T GetParam(std::string key);
+    T GetParam(const std::string& key)
+    {
+        return T(_file[key]);
+    }
 
 private:
     

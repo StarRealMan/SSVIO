@@ -5,8 +5,8 @@ VO::VO(Xtion_Camera::Ptr camera, Config::Ptr config)
     _vocam = camera;
     _featurepoint_coe = config->GetParam<float>("Featurepoint_coe");
     _featurepoint_max = config->GetParam<float>("Featurepoint_max");
-    _goodmatch_thresh = config->GetParam<uchar>("Goodmatch_thresh");
-    _optim_round = config->GetParam<uchar>("Optim_round");
+    _goodmatch_thresh = config->GetParam<int>("Goodmatch_thresh");
+    _optim_round = config->GetParam<int>("Optim_round");
     _map = std::make_shared<Map>(_vocam,config);
     _poses.push_back(Eigen::Matrix4f::Identity());
     _bfmatcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
