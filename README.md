@@ -3,14 +3,14 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 
 **Newest result**
 
-![reconstruction.png](https://github.com/StarRealMan/SSVIO/blob/main/info/reconstruction.png?raw=true)
+![reconstruction.png](https://github.com/StarRealMan/SSVIO/blob/main/images/reconstruction.png?raw=true)
 
 # REMEMBER!
 **Note that the metric of pointcloud is same as the LSB of depth sensor!**
 
 **The coordinate of camera and world is as follow(Red:X, Blue:Y, Green:Z):**
 
-![coordinate.png](https://github.com/StarRealMan/SSVIO/blob/main/info/coordinate.png?raw=true)
+![coordinate.png](https://github.com/StarRealMan/SSVIO/blob/main/images/coordinate.png?raw=true)
 
 ## Requirement
 * gcc and cmake
@@ -106,6 +106,6 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Author
 
-![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/info/avatar.png?raw=true)
+![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)
 
 Student from HITSZ Automatic Control NRS-lab
