@@ -48,7 +48,7 @@ private:
     cv::Mat _dframe;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgbcloud;
 
-    Eigen::Matrix4f _pose;
+    Eigen::Matrix4f _pose = Eigen::Matrix4f::Identity();
     std::vector<cv::KeyPoint> _featurepoints;
     cv::Mat _briefdesc;
     cv::Ptr<cv::FeatureDetector> _fastdetect;

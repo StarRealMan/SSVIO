@@ -99,7 +99,6 @@ Eigen::Matrix4f VO::Optimize()
         
         pose = vertex_pose->estimate().matrix().cast<float>();
         _frame->setPose(pose);
-        std::cout << pose << std::endl;
     }
     else
     {
@@ -130,12 +129,20 @@ void VO::VOLoop()
             {
                 std::cout << "Initializing......" << std::endl;
                 _InitRdy = true;
+                
+                std::cout << "Pose in the world: " << std::endl;
+                std::cout << _poses.back() << std::endl; 
             }
             else
             {
                 pose = Optimize();
-                _poses.push_back(_poses[-1]*pose);
-                _map->UpdateMap(_poses[-1]);
+                _poses.push_back(_poses.back()*pose);
+                _map->UpdateMap(_poses.back());
+
+                std::cout << "Pose between frame: " << std::endl;
+                std::cout << pose << std::endl;
+                std::cout << "Pose in the world: " << std::endl;
+                std::cout << _poses.back() << std::endl; 
             }
             _lastframe = _frame;
             auto t2 = std::chrono::steady_clock::now();
