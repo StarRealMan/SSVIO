@@ -18,7 +18,8 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 * Pangolin:<https://github.com/stevenlovegrove/Pangolin>
 * suitesparse:
 use
-``` apt install libsuitesparse-dev
+```
+apt install libsuitesparse-dev
 ```
 * openni:
 use 
