@@ -10,14 +10,21 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 
 ## Requirement
 * gcc and cmake
-* OpenCV:[opencv](https://opencv.org/)
-* PCL:[pcl](https://pointclouds.org/)
-* g2o:[g2o](https://github.com/RainerKuemmerle/g2o)
-* Sophus:[sophus](hhttps://github.com/strasdat/Sophus)
-* Eigen:[eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page)
-* Pangolin:[pangolin](https://github.com/stevenlovegrove/Pangolin)
-* suitesparse:use apt install libsuitesparse-dev
-* openni:use apt install libopenni2-dev
+* OpenCV:<https://opencv.org/>
+* PCL:<https://pointclouds.org/>
+* g2o:<https://github.com/RainerKuemmerle/g2o>
+* Sophus:<https://github.com/strasdat/Sophus>
+* Eigen:<http://eigen.tuxfamily.org/index.php?title=Main_Page>
+* Pangolin:<https://github.com/stevenlovegrove/Pangolin>
+* suitesparse:
+use
+``` apt install libsuitesparse-dev
+```
+* openni:
+use 
+```
+apt install libopenni2-dev
+```
 
 ## Usage
 * Go to {YOUR_DIRECTORY}/
