@@ -4,7 +4,7 @@ project(Visual_Reconstruct)
 set(CMAKE_BUILD_TYPE Release)
 
 set(CMAKE_CXX_FLAGS "-std=c++14 -Wall")
-set(CMAKE_CXX_FLAGS_RELEASE  "-std=c++11 -O3 -fopenmp -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE  "-std=c++14 -O3 -fopenmp -pthread")
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -32,7 +32,8 @@ include_directories(${G2O_INCLUDE_DIRS})
 find_Package(CSparse REQUIRED)
 include_directories(${CSPARSE_INCLUDE_DIR})
 set(G2O_LIBS g2o_core g2o_stuff g2o_types_sba g2o_types_slam3d
-             g2o_solver_csparse g2o_csparse_extension cholmod g2o_solver_cholmod cxsparse)
+             g2o_solver_csparse g2o_csparse_extension cxsparse)
+             # cholmod g2o_solver_cholmod "unused"
 
 # PCL
 find_package(PCL 1.8 REQUIRED COMPONENTS common 
