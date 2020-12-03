@@ -21,18 +21,16 @@ Graduation Project: A point cloud semantic segmentation and VIO based 3D reconst
 * Eigen:<http://eigen.tuxfamily.org/index.php?title=Main_Page>
 * Pangolin:<https://github.com/stevenlovegrove/Pangolin>
 * suitesparse:
-use
 ```
 apt install libsuitesparse-dev
 ```
 * openni:
-use 
 ```
 apt install libopenni2-dev
 ```
 
 ## Usage
-* Go to {YOUR_DIRECTORY}/
+* Go to {YOUR_DIRECTORY}/SSVIO
 * Run following code
 ```
     mkdir build
@@ -41,7 +39,7 @@ apt install libopenni2-dev
     make
     sudo make install
 ```
-* After generating bin file, go to {YOUR_DIRECTORY}/bin
+* After generating bin file, go to {YOUR_DIRECTORY}/SSVIO/bin
 * Run following code
 
 ### Visual Reconstruction
@@ -49,14 +47,14 @@ apt install libopenni2-dev
 ```
     ./run_visual_reconstruct
 ```
-map pointcloud data will be saved at {YOUR_DIRECTORY}/savings/map.pcd
+map pointcloud data will be saved at {YOUR_DIRECTORY}/SSVIO/savings/map.pcd
 
 ### Saving Data
 * photo shooting and data saving app:
 ```
     ./run_saving_data
 ```
-Press "t" to take shot and save at {YOUR_DIRECTORY}/savings
+Press "t" to take shot and save at {YOUR_DIRECTORY}/SSVIO/savings
 
 * Run at {YOUR_DIRECTORY}
 ```
@@ -87,7 +85,7 @@ output pose and matched feature points
 ```
 input saved data num * 2
 
-output frame_joint.pcd saved at  {YOUR_DIRECTORY}/savings/pointcloud
+output frame_joint.pcd saved at  {YOUR_DIRECTORY}/SSVIO/savings/pointcloud
 
 ## Visualization
 After running ./run_visual_reconstruct, you will see three windows:
