@@ -37,7 +37,6 @@ apt install libopenni2-dev
     cd ./build
     cmake ..
     make
-    sudo make install
 ```
 * After generating bin file, go to {YOUR_DIRECTORY}/SSVIO/bin
 * Run following code
