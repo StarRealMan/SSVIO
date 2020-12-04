@@ -98,7 +98,7 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 * Sometimes image grabbed has error (maybe lock error ?)
 * New method to pick good match points
 * Poor match points need to be kicked while optimizing dynamicaly
-
+* Process time gets longer(200ms) as cloud gets bigger, causing error of pose estimation.Voxelization is not suitable 
 
 
 ## Author
