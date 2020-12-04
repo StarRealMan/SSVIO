@@ -54,7 +54,7 @@ Eigen::Matrix4f VO::Optimize()
         float min_dist = min_max.first->distance;
         for(ushort i = 0; i < matchepoints.size(); i++)
         {
-            if (matchepoints[i].distance <= std::max(_featurepoint_coe * min_dist, _featurepoint_max))
+            if(matchepoints[i].distance <= std::max(_featurepoint_coe * min_dist, _featurepoint_max))
             {
                 _goodmatchepoints.push_back(matchepoints[i]);
             }

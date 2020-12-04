@@ -25,7 +25,7 @@ Xtion_Camera::Xtion_Camera()
     for(ushort i = 0; i < _deviceList.getSize(); ++i)
     {
         const openni::DeviceInfo &rDevInfo = _deviceList[i];
-        if (vendor == rDevInfo.getVendor())
+        if(vendor == rDevInfo.getVendor())
         {
             uri = rDevInfo.getUri();
             break;
@@ -81,7 +81,7 @@ Xtion_Camera::Xtion_Camera()
 		std::cerr << "无法创建彩色数据流："<< openni::OpenNI::getExtendedError() << std::endl;
 	}
  
-	if (!_streamDepth.isValid() || !_streamRGB.isValid())
+	if(!_streamDepth.isValid() || !_streamRGB.isValid())
 	{
 		std::cerr << "数据流不合法" << std::endl;
 		openni::OpenNI::shutdown();

@@ -12,7 +12,7 @@ Config::Config(const std::string& filename)
 
 Config::~Config()
 {
-    if (_file.isOpened())
+    if(_file.isOpened())
     {
         _file.release();
     }

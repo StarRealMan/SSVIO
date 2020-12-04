@@ -7,7 +7,7 @@ Map::Map(Xtion_Camera::Ptr camera, Config::Ptr config)
     _mapcloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
     _mapcloud->width = 0;
     _mapcloud->height = 1;
-    _mapcloud->points.resize (_mapcloud->width * _mapcloud->height);
+    _mapcloud->points.resize(_mapcloud->width * _mapcloud->height);
 
     _height = 240;
     _width = 320;
@@ -38,7 +38,7 @@ void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud,c
     transform.rotate(rotation);
     transform.translate(translation);
 
-    pcl::transformPointCloud (*(_mapcam->getRGBCloud()), *new_cloud, transform);
+    pcl::transformPointCloud(*(_mapcam->getRGBCloud()), *new_cloud, transform);
 }
 
 

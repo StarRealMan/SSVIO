@@ -16,10 +16,10 @@ int main(int argc,char** argv)
 {
     cv::Mat Image1,Image2,dImage1,dImage2;
     std::string reading_data_num1,reading_data_num2;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2 (new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud1 (new pcl::PointCloud<pcl::PointXYZRGB>);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud1(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
   	pcl::PCDWriter Pclwriter;
     pcl::visualization::CloudViewer viewer("Simple Cloud Viewer");
     
@@ -37,8 +37,8 @@ int main(int argc,char** argv)
     Image2 = cv::imread("../savings/rgb/rgb" + reading_data_num2 + ".jpg");
     dImage2 = cv::imread("../savings/depth/depth" + reading_data_num2 + ".jpg");
 
-    pcl::io::loadPCDFile<pcl::PointXYZRGB> ("../savings/pointcloud/pointcloud" + reading_data_num1 + ".pcd", *cloud1);
-    pcl::io::loadPCDFile<pcl::PointXYZRGB> ("../savings/pointcloud/pointcloud" + reading_data_num2 + ".pcd", *cloud2);
+    pcl::io::loadPCDFile<pcl::PointXYZRGB>("../savings/pointcloud/pointcloud" + reading_data_num1 + ".pcd", *cloud1);
+    pcl::io::loadPCDFile<pcl::PointXYZRGB>("../savings/pointcloud/pointcloud" + reading_data_num2 + ".pcd", *cloud2);
 
 //feature fingding and matching (same as run_feature_match.cpp)
 
@@ -84,7 +84,7 @@ int main(int argc,char** argv)
         double min_dist = min_max.first->distance;
         for(ushort i = 0; i < matchepoints.size(); i++)
         {
-            if (matchepoints[i].distance <= std::max(1.5 * min_dist, 20.0))
+            if(matchepoints[i].distance <= std::max(1.5 * min_dist, 20.0))
             {
                 goodmatchepoints.push_back(matchepoints[i]);
             }
@@ -174,5 +174,5 @@ void PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr before,
     transform.rotate(rotation);
     transform.translate(translation);
 
-    pcl::transformPointCloud (*before, *after, transform);
+    pcl::transformPointCloud(*before, *after, transform);
 }
