@@ -27,14 +27,23 @@ public:
     ~Map();
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr getMapPointCloud();
+    void setPose(const Eigen::Matrix4f& pose);
     void PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud,const Eigen::Matrix4f& trans);
-    void UpdateMap(const Eigen::Matrix4f& pose);
+    void UpdateMap(void);
+    void MapLoop(void);
+    void MapStop();
 
 private:
 
     Xtion_Camera::Ptr _mapcam;
+    std::mutex _pose_mtx;
     std::mutex _mappointcloud_mtx;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr _mapcloud;
+    Eigen::Matrix4f _current_pose;
+
+    bool _new_pos_set;
+    std::atomic<bool> _maprunning;
+    std::thread _mapthread;
 
     int _height;
     int _width;

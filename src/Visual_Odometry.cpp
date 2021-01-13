@@ -137,7 +137,7 @@ void VO::VOLoop()
             {
                 pose = Optimize();
                 _poses.push_back(_poses.back()*pose);
-                _map->UpdateMap(_poses.back());
+                _map->setPose(_poses.back());
 
                 std::cout << "Pose between frame: " << std::endl;
                 std::cout << pose << std::endl;
@@ -154,6 +154,7 @@ void VO::VOLoop()
 
 void VO::VOStop()
 {
+    _map->MapStop();
     _vorunning.store(false);
     _vothread.join();
 }

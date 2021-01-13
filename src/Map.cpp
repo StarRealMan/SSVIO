@@ -8,6 +8,7 @@ Map::Map(Xtion_Camera::Ptr camera, Config::Ptr config)
     _mapcloud->width = 0;
     _mapcloud->height = 1;
     _mapcloud->points.resize(_mapcloud->width * _mapcloud->height);
+    _current_pose = Eigen::Matrix4f::Identity();
 
     _height = 240;
     _width = 320;
@@ -17,11 +18,22 @@ Map::Map(Xtion_Camera::Ptr camera, Config::Ptr config)
     _inner_fy = 254.1649;
     _inv_inner_fx = 1/_inner_fx;
     _inv_inner_fy = 1/_inner_fy;
+
+    _new_pos_set = false;
+    _maprunning.store(true);
+    _mapthread = std::thread(std::bind(&Map::MapLoop,this));
 }
 
 Map::~Map()
 {
 
+}
+
+void Map::setPose(const Eigen::Matrix4f& pose)
+{
+    std::lock_guard<std::mutex> lck(_pose_mtx);
+    _current_pose = pose;
+    _new_pos_set = true;
 }
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr Map::getMapPointCloud()
@@ -42,14 +54,14 @@ void Map::PointcloudTransform(pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud,c
 }
 
 
-void Map::UpdateMap(const Eigen::Matrix4f& pose)
+void Map::UpdateMap(void)
 {
-    std::cout << " current Map has " << _mapcloud->width << " Points!" << std::endl;
+    std::lock_guard<std::mutex> lck(_pose_mtx);
+    std::cout << "Current Map has " << _mapcloud->width << " Points!" << std::endl;
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
-    PointcloudTransform(new_cloud, pose);
-    std::cout << " New cloud has " << new_cloud->width << " Points!" << std::endl;
+    PointcloudTransform(new_cloud, _current_pose);
 
     *_mapcloud += *new_cloud;
 
@@ -62,4 +74,20 @@ void Map::UpdateMap(const Eigen::Matrix4f& pose)
 }
 
 
-    
+void Map::MapLoop(void)
+{
+    while(_maprunning.load())
+    {
+        if(_new_pos_set == true)
+        {
+            UpdateMap();
+            _new_pos_set = false;
+        }
+    }
+}
+
+void Map::MapStop()
+{
+    _maprunning.store(false);
+    _mapthread.join();
+}
