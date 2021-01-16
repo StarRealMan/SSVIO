@@ -5,10 +5,11 @@
 Camera_FPS        : 30
 
 #VO
-Featurepoint_coe  : 1.7
-Featurepoint_max  : 25.0
-Goodmatch_thresh  : 30
-Optim_round       : 20
+Featurepoint_coe  : 2
+Featurepoint_max  : 50.0
+Goodmatch_thresh  : 8
+Chi2_thresh       : 15.991
+Optim_round       : 10
 
 #Map
 Voxel_size        : 100.0

@@ -6,6 +6,7 @@ VO::VO(Xtion_Camera::Ptr camera, Config::Ptr config)
     _featurepoint_coe = config->GetParam<float>("Featurepoint_coe");
     _featurepoint_max = config->GetParam<float>("Featurepoint_max");
     _goodmatch_thresh = config->GetParam<int>("Goodmatch_thresh");
+    _chi2_thresh = config->GetParam<float>("Chi2_thresh");
     _optim_round = config->GetParam<int>("Optim_round");
     _map = std::make_shared<Map>(_vocam,config);
     _poses.push_back(Eigen::Matrix4f::Identity());
@@ -20,7 +21,7 @@ VO::~VO()
     Pclwriter.write("../savings/map.pcd",*(_map->getMapPointCloud()));
 }
 
-Eigen::Matrix4f VO::Optimize()
+Eigen::Matrix4f VO::Feature_Optimize()
 {
     Eigen::Matrix4f pose = _lastframe->getPose();
     SE3 pose_estimate;
@@ -82,6 +83,8 @@ Eigen::Matrix4f VO::Optimize()
         vertex_pose->setId(0);
         optimizer.addVertex(vertex_pose);
 
+        std::vector<EdgeProjectionPoseOnly *> edges;
+        std::vector<bool> outliers;
         for(ushort i = 0; i < _goodmatchepoints.size(); i++)
         {
             EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(
@@ -91,12 +94,13 @@ Eigen::Matrix4f VO::Optimize()
             edge->setMeasurement(_frame->get3DPoint(featurepoints[_goodmatchepoints[i].queryIdx].pt).cast<double>());
             edge->setInformation(Eigen::Matrix3d::Identity());
             edge->setRobustKernel(new g2o::RobustKernelHuber);
+            edges.push_back(edge);
+            outliers.push_back(false);
             optimizer.addEdge(edge);
         }
 
         optimizer.initializeOptimization();
         optimizer.optimize(_optim_round);
-        
         pose = vertex_pose->estimate().matrix().cast<float>();
         _frame->setPose(pose);
     }
@@ -105,6 +109,35 @@ Eigen::Matrix4f VO::Optimize()
         std::cout << "not enough good match, optimize failed" << std::endl;
         return pose;
     }
+
+    return pose;
+}
+
+Eigen::Matrix4f VO::DenseICP_Optimize(Eigen::Matrix4f pose)
+{
+    pcl::IterativeClosestPoint<pcl::PointXYZRGB, pcl::PointXYZRGB> icp;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_source (new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_target (new pcl::PointCloud<pcl::PointXYZRGB>);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_target_t (new pcl::PointCloud<pcl::PointXYZRGB>);
+
+    cloud_source = _lastframe->getRGBDCloud();
+    cloud_target = _frame->getRGBDCloud();
+    
+    Eigen::Matrix3f rotation = pose.block<3,3>(0,0);
+    Eigen::Vector3f translation = pose.block<3,1>(0,3);
+    Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+    transform.rotate(rotation);
+    transform.translate(translation);
+    
+    pcl::transformPointCloud(*cloud_target, *cloud_target_t, transform);
+
+    icp.setInputSource(cloud_source);
+    icp.setInputTarget(cloud_target_t);
+    icp.setMaximumIterations(5);
+
+    pcl::PointCloud<pcl::PointXYZRGB> Final;
+    icp.align(Final);
+    pose = icp.getFinalTransformation();
 
     return pose;
 }
@@ -135,8 +168,11 @@ void VO::VOLoop()
             }
             else
             {
-                pose = Optimize();
+                pose = Feature_Optimize();
+                // pose = DenseICP_Optimize(pose);
                 _poses.push_back(_poses.back()*pose);
+                // Point_World = _pose * Point_Cam
+                // Cam_pose(in world coordinate) = _pose
                 _map->setPose(_poses.back());
 
                 std::cout << "Pose between frame: " << std::endl;

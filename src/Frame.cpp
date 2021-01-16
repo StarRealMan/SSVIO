@@ -47,6 +47,12 @@ Eigen::Vector3f Frame::get3DPoint(const cv::Point2f& imgpos)
     return temppoint;
 }
 
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr Frame::getRGBDCloud()
+{
+    std::lock_guard<std::mutex> lck(_rgbdcloud_mtx);
+    return _rgbcloud;
+}
+
 void Frame::UpdateFrame()
 {
     _rgbframe = _framecam->getRGBImage();

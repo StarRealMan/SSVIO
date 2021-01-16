@@ -61,6 +61,7 @@ void Map::UpdateMap(void)
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointXYZRGB>);
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr new_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
 
+    // do new_cloud = _current_pose * PointCam
     PointcloudTransform(new_cloud, _current_pose);
 
     *_mapcloud += *new_cloud;

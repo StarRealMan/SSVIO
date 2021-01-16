@@ -6,6 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
 #include <boost/make_shared.hpp>
 
 #include <iostream>
@@ -29,7 +30,8 @@ public:
     ~VO();
 
     pcl::PointXYZRGB NewPoint_Generate(ushort u, ushort v);
-    Eigen::Matrix4f Optimize();
+    Eigen::Matrix4f Feature_Optimize();
+    Eigen::Matrix4f DenseICP_Optimize(Eigen::Matrix4f pose);
     void VOLoop();
     void VOStop();
 
@@ -51,6 +53,7 @@ private:
     float _featurepoint_coe;
     float _featurepoint_max;
     int _goodmatch_thresh;
+    float _chi2_thresh;
     int _optim_round;
 };
 

@@ -30,6 +30,7 @@ public:
     void setPose(const Eigen::Matrix4f& pose);
     void getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints);
     void getBriefdesc(cv::Mat& briefdesc);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr getRGBDCloud();
     Eigen::Vector3f get3DPoint(const cv::Point2f& imgpos);
 
 private:
@@ -43,6 +44,7 @@ private:
     std::mutex _pose_mtx;
     std::mutex _featurepoints_mtx;
     std::mutex _briefdesc_mtx;
+    std::mutex _rgbdcloud_mtx;
 
     cv::Mat _rgbframe;
     cv::Mat _dframe;

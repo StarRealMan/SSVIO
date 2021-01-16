@@ -11,7 +11,7 @@ int main(int argc,char** argv)
 
 	while(viewer->getKeyVal() != 27 )
 	{
-		if(viewer->getKeyVal() == 't')
+		if(viewer->getKeyVal() == 's')
 		{
 			cv::imwrite("../savings/rgb/rgb" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getRGBImage());
 			cv::imwrite("../savings/depth/depth" + std::to_string(saving_data_num) + ".jpg", xtion_cam->getDImage());

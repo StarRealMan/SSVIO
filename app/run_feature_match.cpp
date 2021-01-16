@@ -60,7 +60,7 @@ int main(int argc,char** argv)
         double min_dist = min_max.first->distance;
         for(ushort i = 0; i < matchepoints.size(); i++)
         {
-            if(matchepoints[i].distance <= std::max(1.5 * min_dist, 30.0))
+            if(matchepoints[i].distance <= std::max(2.0 * min_dist, 50.0))
             {
                 goodmatchepoints.push_back(matchepoints[i]);
             }
