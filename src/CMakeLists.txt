@@ -9,4 +9,5 @@ add_library(visual_recon SHARED
 
 target_link_libraries(visual_recon
                       xtion_driver
+                      xtion2_driver
                       ${THIRD_PARTY_LIBS})

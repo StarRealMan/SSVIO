@@ -3,6 +3,7 @@ add_executable(run_visual_reconstruct
 
 target_link_libraries(run_visual_reconstruct
                       xtion_driver
+                      xtion2_driver
                       visual_recon
                       ${THIRD_PARTY_LIBS})
 
@@ -17,6 +18,7 @@ add_executable(run_saving_data
 
 target_link_libraries(run_saving_data
                       xtion_driver
+                      xtion2_driver
                       visual_recon
                       ${THIRD_PARTY_LIBS})
 
