@@ -1,10 +1,9 @@
-add_executable(run_visual_reconstruct
-               run_visual_reconstruct.cpp)
+add_executable(run_slam
+               run_slam.cpp)
 
-target_link_libraries(run_visual_reconstruct
+target_link_libraries(run_slam
                       xtion_driver
-                      xtion2_driver
-                      visual_recon
+                      libSSVIO
                       ${THIRD_PARTY_LIBS})
 
 
@@ -13,33 +12,3 @@ file(MAKE_DIRECTORY "../savings/rgb")
 file(MAKE_DIRECTORY "../savings/depth")
 file(MAKE_DIRECTORY "../savings/pointcloud")
 
-add_executable(run_saving_data
-               run_saving_data.cpp)
-
-target_link_libraries(run_saving_data
-                      xtion_driver
-                      xtion2_driver
-                      visual_recon
-                      ${THIRD_PARTY_LIBS})
-
-add_executable(run_feature_match
-               run_feature_match.cpp)
-
-target_link_libraries(run_feature_match
-                      visual_recon
-                      ${THIRD_PARTY_LIBS})
-
-add_executable(run_g2o_optim
-               run_g2o_optim.cpp)
-
-target_link_libraries(run_g2o_optim
-                      visual_recon
-                      ${THIRD_PARTY_LIBS})
-
-
-add_executable(run_frame_jointment
-               run_frame_jointment.cpp)
-
-target_link_libraries(run_frame_jointment
-                      visual_recon
-                      ${THIRD_PARTY_LIBS})

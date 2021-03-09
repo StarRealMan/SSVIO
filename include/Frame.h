@@ -1,60 +1,54 @@
 #ifndef __FRAME_H__
 #define __FRAME_H__
 
+#include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#include <opencv2/opencv.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 #include <iostream>
 #include <vector>
 #include <thread>
 #include <mutex>
 
-#include "Xtion_Driver.h"
-#include "g2o_optim.h"
+#include "Feature.h"
 
 class Frame
 {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Frame> Ptr;
-    
-    Frame(){}
-    Frame(Xtion_Camera::Ptr camera);
+
+    Frame(cv::Mat rgb_img, cv::Mat d_img, ORBextractor::Ptr _orb_extractor);
     ~Frame();
 
-    void UpdateFrame();
-    Eigen::Matrix4f getPose();
-    void setPose(const Eigen::Matrix4f& pose);
-    void getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints);
-    void getBriefdesc(cv::Mat& briefdesc);
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr getRGBDCloud();
-    Eigen::Vector3f get3DPoint(const cv::Point2f& imgpos);
+    void CheckKeyFrame(Eigen::Matrix4f transform);
+    bool IsKeyFrame();
+    void SetKeyFrame();
+
+    cv::Mat GetDImage();
+    cv::Mat GetRGBImage();
+    std::vector<cv::KeyPoint> GetKeyPoints();
+    cv::Mat GetDescriptor();
+    void SetAbsPose(Eigen::Matrix4f pose);
+    cv::Point3f Get3DPoint(int index);
+
+    static float _InnerCx, _InnerCy, _InnerFx, _InnerFy, _InvInnerFx, _InvInnerFy;
+    static double _DepthScale;
 
 private:
+    cv::Mat _rgb_img;
+    cv::Mat _d_img;
+    cv::Mat _descriptor;
+    bool _is_key_frame;
+    Eigen::Matrix4f _rel_abs_pos;
 
-    Xtion_Camera::Ptr _framecam;
-    float _inner_cx = 160.5912, _inner_cy = 120.4792,
-          _inner_fx = 253.0589, _inner_fy = 254.1649,
-          _inv_inner_fx = 0.003951649, _inv_inner_fy = 0.003934454;
+    std::vector<cv::KeyPoint> _key_point_vec;
+    std::mutex _is_key_frame_mtx;
+    std::mutex _d_image_mtx;
+    std::mutex _rgb_image_mtx;
+    std::mutex _key_points_mtx;
+    std::mutex _descriptor_mtx;
 
-    std::mutex _match_mtx;
-    std::mutex _pose_mtx;
-    std::mutex _featurepoints_mtx;
-    std::mutex _briefdesc_mtx;
-    std::mutex _rgbdcloud_mtx;
-
-    cv::Mat _rgbframe;
-    cv::Mat _dframe;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgbcloud;
-
-    Eigen::Matrix4f _pose = Eigen::Matrix4f::Identity();
-    std::vector<cv::KeyPoint> _featurepoints;
-    cv::Mat _briefdesc;
-    cv::Ptr<cv::FeatureDetector> _fastdetect;
-    cv::Ptr<cv::DescriptorExtractor> _briefext;
 };
 
 #endif

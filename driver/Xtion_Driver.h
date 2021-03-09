@@ -14,60 +14,64 @@
 #include <thread>
 #include <mutex>
 
+#include "Config.h"
 
-class Xtion_Camera
+class XtionCamera
 {
 public:
-    typedef std::shared_ptr<Xtion_Camera> Ptr;
+    typedef std::shared_ptr<XtionCamera> Ptr;
 
-    Xtion_Camera();
-    ~Xtion_Camera();
+    XtionCamera(Config::Ptr config);
+    ~XtionCamera();
 
-    void grab();
+    void GrabImage();
 
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr getRGBCloud();
-    cv::Mat getDImage();
-    cv::Mat getRGBImage();
-    pcl::PointXYZRGB getRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr GetRGBCloud();
+    cv::Mat GetDImage();
+    cv::Mat GetRGBImage();
+    pcl::PointXYZRGB GetRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans);
     
-    bool isGrabRdy();
-    void setGrabRdyfalse();
+    bool IsGrabRdy();
+    void SetGrabRdyfalse();
 
     void GrabLoop();
-    void GrabStop();
+    void CameraStop();
 
 
 private:
-    int _height,_width;
-    float _inner_cx,_inner_cy,_inner_fx,_inner_fy,_inv_inner_fx,_inv_inner_fy;
-    openni::Array<openni::DeviceInfo> _deviceList;
+    int _UseXtionGen;
+    int _Fps;
+    int _ImgHeight, _ImgWidth;
+    float _InnerCx, _InnerCy, _InnerFx, _InnerFy, _InvInnerFx, _InvInnerFy;
+    double _ImgDepthCoe, _DepthScale;
+    openni::Array<openni::DeviceInfo> _device_list;
 
-    cv::Mat _rgbImage;
-    cv::Mat _dImage;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgbCloud;
-    bool _grabRdy = false;
-    std::mutex _rgbimage_mtx;
-    std::mutex _dimage_mtx;
-    std::mutex _rgbcloud_mtx;
-    std::mutex _grabrdy_mtx;
+    cv::Mat _rgb_image;
+    cv::Mat _d_image;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgb_cloud;
+    bool _grab_rdy = false;
+    std::mutex _rgb_image_mtx;
+    std::mutex _d_image_mtx;
+    std::mutex _rgb_cloud_mtx;
+    std::mutex _grab_rdy_mtx;
 
-    std::atomic<bool> _grabrunning;
-    std::thread _grabthread;
+    std::atomic<bool> _grab_running;
+    std::thread _grab_thread;
 
-    openni::VideoStream _streamDepth;
-    openni::VideoStream _streamRGB;
-    openni::VideoMode _modeD;
-    openni::VideoMode _modeRGB;
+    openni::VideoStream _stream_depth;
+    openni::VideoStream _stream_rgb;
+    openni::VideoMode _mode_d;
+    openni::VideoMode _mode_rgb;
 
     openni::Device _camera;
-    std::string vendor = "";
+    std::string _vendor = "";
     
     openni::Status rc;
-    openni::VideoFrameRef _onidImage;
-    openni::VideoFrameRef _onirgbImage;
+    openni::VideoFrameRef _oni_d_image;
+    openni::VideoFrameRef _oni_rgb_image;
     
-    void showdevice();
-    void closecamera();
+    void ShowDevice();
+    void CloseCamera();
 
 };
 

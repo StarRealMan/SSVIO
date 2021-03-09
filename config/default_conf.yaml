@@ -2,15 +2,25 @@
 ---
 
 #CAMERA
-Camera_FPS        : 30
+UseXtionGen       : 1
+Fps               : 30
+ImgHeight         : 240
+ImgWidth          : 320
+InnerCx           : 160.5912
+InnerCy           : 120.4792
+InnerFx           : 253.0589
+InnerFy           : 254.1649
 
 #VO
-Featurepoint_coe  : 2
-Featurepoint_max  : 50.0
-Goodmatch_thresh  : 8
-Chi2_thresh       : 15.991
-Optim_round       : 10
+FeatureNum        : 1000
+ScaleFactor       : 1.2
+LevelNum          : 8
+IniThFAST         : 20
+MinThFAST         : 7
 
 #Map
 Voxel_size        : 100.0
 
+#DBoW
+Threshold         : 50
+NNRatio           : 0.6

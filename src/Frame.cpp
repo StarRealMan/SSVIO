@@ -1,66 +1,80 @@
 #include "Frame.h"
 
-Frame::Frame(Xtion_Camera::Ptr camera)
+Frame::Frame(cv::Mat rgb_img, cv::Mat d_img, ORBextractor::Ptr _orb_extractor):_rgb_img(rgb_img), _d_img(d_img)
 {
-    _framecam = camera;
-    _fastdetect = cv::FastFeatureDetector::create(50);
-    _briefext = cv::ORB::create();
+    _is_key_frame = false;
+    cv::Mat gray_image;
+    cv::cvtColor( _rgb_img, gray_image, CV_RGB2GRAY);
+    _orb_extractor->Extract(gray_image, cv::Mat(), _key_point_vec, _descriptor);
 }
 
 Frame::~Frame()
 {
-
+    
 }
 
-void Frame::setPose(const Eigen::Matrix4f& pose)
+void Frame::CheckKeyFrame(Eigen::Matrix4f transform)
 {
-    std::lock_guard<std::mutex> lck(_pose_mtx);
-    _pose = pose;
+
+    // SetKeyFrame()
 }
 
-Eigen::Matrix4f Frame::getPose()
+bool Frame::IsKeyFrame()
 {
-    std::lock_guard<std::mutex> lck(_pose_mtx);
-    return _pose;
+    std::lock_guard<std::mutex> lck(_is_key_frame_mtx);
+    return _is_key_frame;
 }
 
-void Frame::getFeaturepoints(std::vector<cv::KeyPoint>& featurepoints)
+void Frame::SetKeyFrame()
 {
-    std::lock_guard<std::mutex> lck(_featurepoints_mtx);
-    featurepoints = _featurepoints;
+    std::lock_guard<std::mutex> lck(_is_key_frame_mtx);
+    _is_key_frame = true;
 }
 
-void Frame::getBriefdesc(cv::Mat& briefdesc)
+cv::Mat Frame::GetDImage()
 {
-    std::lock_guard<std::mutex> lck(_briefdesc_mtx);
-    briefdesc = _briefdesc;
+    std::lock_guard<std::mutex> lck(_d_image_mtx);
+    return _d_img;
 }
 
-Eigen::Vector3f Frame::get3DPoint(const cv::Point2f& imgpos)
+cv::Mat Frame::GetRGBImage()
 {
-    Eigen::Matrix<float, 3, 1> temppoint;
-    float depth;
-
-    depth = _dframe.at<ushort>(imgpos.x,imgpos.y);
-    temppoint << (imgpos.x - _inner_cx)*depth*_inv_inner_fx, (imgpos.y - _inner_cy)*depth*_inv_inner_fy, depth;
-
-    return temppoint;
+    std::lock_guard<std::mutex> lck(_rgb_image_mtx);
+    return _rgb_img;
 }
 
-pcl::PointCloud<pcl::PointXYZRGB>::Ptr Frame::getRGBDCloud()
+std::vector<cv::KeyPoint> Frame::GetKeyPoints()
 {
-    std::lock_guard<std::mutex> lck(_rgbdcloud_mtx);
-    return _rgbcloud;
+    std::lock_guard<std::mutex> lck(_key_points_mtx);
+    return _key_point_vec;
 }
 
-void Frame::UpdateFrame()
+cv::Mat Frame::GetDescriptor()
 {
-    _rgbframe = _framecam->getRGBImage();
-    _dframe = _framecam->getDImage();
-    _rgbcloud = _framecam->getRGBCloud();
-    cv::Mat grayframe;
-    cv::cvtColor(_rgbframe, grayframe, cv::COLOR_BGR2GRAY);
-    _fastdetect->detect(grayframe, _featurepoints);
-    _briefext->compute(grayframe, _featurepoints, _briefdesc);
+    std::lock_guard<std::mutex> lck(_descriptor_mtx);
+    return _descriptor;
 }
 
+void Frame::SetAbsPose(Eigen::Matrix4f pose)
+{
+    std::lock_guard<std::mutex> lck(_descriptor_mtx);
+    if(_is_key_frame)
+        _rel_abs_pos = pose;
+}
+
+cv::Point3f Frame::Get3DPoint(int index)
+{
+    cv::Point3f temp_3d_point;
+    float pos_x, pos_y;
+
+    pos_x = _key_point_vec[index].pt.x;
+    pos_y = _key_point_vec[index].pt.y;
+    
+    ushort depth = _d_img.at<ushort>(pos_y, pos_x)*_DepthScale;
+
+    temp_3d_point.x = (pos_x - _InnerCx)*depth*_InvInnerFx;
+    temp_3d_point.y = (pos_y - _InnerCy)*depth*_InvInnerFy;
+    temp_3d_point.z = depth;
+
+    return temp_3d_point;
+}

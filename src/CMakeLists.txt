@@ -1,13 +1,17 @@
-add_library(visual_recon SHARED
-            config.cpp
-            Reconstruct.cpp
-            Visual_Odometry.cpp
+add_library(libSSVIO SHARED
+            Config.cpp
+            Feature.cpp
+            FMatch.cpp
             Frame.cpp
+            IMU.cpp
+            Local.cpp
+            Loop.cpp
             Map.cpp
+            Odometry.cpp
+            Optimizer.cpp
             Viewer.cpp
 )
 
-target_link_libraries(visual_recon
+target_link_libraries(libSSVIO
                       xtion_driver
-                      xtion2_driver
                       ${THIRD_PARTY_LIBS})

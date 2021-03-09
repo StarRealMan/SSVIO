@@ -1,45 +1,56 @@
 #include "Viewer.h"
 
-MyViewer::MyViewer(Xtion_Camera::Ptr camera):_pclviewer("Simple Cloud Viewer")
+Viewer::Viewer(XtionCamera::Ptr camera, Odometry::Ptr odometry):_pcl_viewer("Simple Cloud Viewer")
 {
  	cv::namedWindow("Depth",cv::WINDOW_NORMAL);
 	cv::namedWindow("RGB",cv::WINDOW_NORMAL);
     
-    _viewerCam = camera;
+    _viewer_cam = camera;
+    _viewer_odometry = odometry;
     
-    _viewerrunning.store(true);
-    _viewerthread = std::thread(std::bind(&MyViewer::ViewerLoop,this));
+    _viewer_running.store(true);
+    _viewer_thread = std::thread(std::bind(&Viewer::ViewerLoop,this));
 }
 
-MyViewer::~MyViewer()
+Viewer::~Viewer()
 {
 	cv::destroyWindow("Depth");
 	cv::destroyWindow("RGB");
 }
 
-char MyViewer::getKeyVal()
+char Viewer::GetKeyVal()
 {
-    std::lock_guard<std::mutex> lck(_keyval_mtx);
-    return _keyVal;
+    std::lock_guard<std::mutex> lck(_key_val_mtx);
+    return _key_val;
 }
 
-void MyViewer::ViewerLoop()
+void Viewer::ViewerLoop()
 {   
-    while(_viewerrunning.load())
+    cv::Mat out_img;
+
+    while(_viewer_running.load())
     {
-        cv::Mat RGB_IMG = _viewerCam->getRGBImage();
-        if(!RGB_IMG.empty())
+        auto t1 = std::chrono::steady_clock::now();
+     
+        _cur_frame = _viewer_odometry->GetCurFrame();
+        if(!(_cur_frame->GetRGBImage().empty()))
         {
-            cv::imshow("RGB", RGB_IMG);
-            cv::imshow("Depth", _viewerCam->getDImage());
-            _pclviewer.showCloud(_viewerCam->getRGBCloud());
-            _keyVal = cv::waitKey(33);
+            cv::drawKeypoints(_cur_frame->GetRGBImage(), _cur_frame->GetKeyPoints(), out_img);
+            cv::imshow("RGB", out_img);
+            cv::imshow("Depth", _cur_frame->GetDImage());
+            cv::imshow("Depth", _cur_frame->GetDImage());
+            _pcl_viewer.showCloud(_viewer_cam->GetRGBCloud());
+            _key_val = cv::waitKey(31);
         }
+
+        auto t2 = std::chrono::steady_clock::now();
+        auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+        std::cout << "Viewer Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
     }
 }
 
-void MyViewer::ViewerStop()
+void Viewer::ViewerStop()
 {
-    _viewerrunning.store(false);
-    _viewerthread.join();
+    _viewer_running.store(false);
+    _viewer_thread.join();
 }

@@ -13,27 +13,31 @@
 #include <mutex>
 
 #include "Xtion_Driver.h"
+#include "Odometry.h"
+#include "Frame.h"
 
-class MyViewer
+class Viewer
 {
 public:
-    typedef std::shared_ptr<MyViewer> Ptr;
-    MyViewer(Xtion_Camera::Ptr camera);
-    ~MyViewer();
+    typedef std::shared_ptr<Viewer> Ptr;
+    Viewer(XtionCamera::Ptr camera, Odometry::Ptr odometry);
+    ~Viewer();
 
-    char getKeyVal();
+    char GetKeyVal();
     void ViewerLoop();
     void ViewerStop();
 
 private:
-    char _keyVal;
-    pcl::visualization::CloudViewer _pclviewer;
-    Xtion_Camera::Ptr _viewerCam;
+    char _key_val;
+    pcl::visualization::CloudViewer _pcl_viewer;
+    XtionCamera::Ptr _viewer_cam;
+    Odometry::Ptr _viewer_odometry;
 
-    std::mutex _keyval_mtx;
+    std::mutex _key_val_mtx;
     std::mutex _visualizer_mtx;
-    std::atomic<bool> _viewerrunning;
-    std::thread _viewerthread;
+    std::atomic<bool> _viewer_running;
+    std::thread _viewer_thread;
+    Frame::Ptr _cur_frame;
 
 };
 

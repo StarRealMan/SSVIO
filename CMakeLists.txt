@@ -51,6 +51,11 @@ add_definitions(${PCL_DEFINITIONS})
 find_package(CSparse REQUIRED)
 include_directories(${CSPARSE_INCLUDE_DIR})
 
+#DBow3
+set( DBoW3_INCLUDE_DIRS "/usr/local/include" )
+set( DBoW3_LIBS "/usr/local/lib/libDBoW3.a" )
+include_directories(${DBoW3_INCLUDE_DIRS})
+
 set(THIRD_PARTY_LIBS
         ${OpenCV_LIBS}
         ${Sophus_LIBRARIES}
@@ -59,6 +64,7 @@ set(THIRD_PARTY_LIBS
         ${CSPARSE_LIBRARY}
         ${G2O_LIBS}
         ${PCL_LIBRARIES}
+        ${DBoW3_LIBS}
         )
 
 enable_testing()
@@ -67,6 +73,7 @@ enable_testing()
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/driver)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
+
 add_subdirectory(driver)
 add_subdirectory(src)
 add_subdirectory(app)
