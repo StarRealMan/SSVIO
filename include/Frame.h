@@ -21,7 +21,7 @@ public:
     Frame(cv::Mat rgb_img, cv::Mat d_img, ORBextractor::Ptr _orb_extractor);
     ~Frame();
 
-    void CheckKeyFrame(Eigen::Matrix4f transform);
+    void CheckKeyFrame(Eigen::Matrix4f transform, int good_point_num, int frames_between);
     bool IsKeyFrame();
     void SetKeyFrame();
 
@@ -32,8 +32,16 @@ public:
     void SetAbsPose(Eigen::Matrix4f pose);
     cv::Point3f Get3DPoint(int index);
 
-    static float _InnerCx, _InnerCy, _InnerFx, _InnerFy, _InvInnerFx, _InvInnerFy;
+    static float _InnerCx;
+    static float _InnerCy;
+    static float _InnerFx;
+    static float _InnerFy;
+    static float _InvInnerFx;
+    static float  _InvInnerFy;
     static double _DepthScale;
+    static int _MaxGoodPointThres;
+    static int _MaxFramesBetween;
+    static int _MinFramesBetween;
 
 private:
     cv::Mat _rgb_img;

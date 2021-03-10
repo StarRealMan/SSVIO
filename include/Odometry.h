@@ -3,12 +3,13 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <opencv2/core/eigen.hpp>
 
 #include "Config.h"
 #include "Xtion_Driver.h"
 #include "Feature.h"
 #include "Frame.h"
-#include "FMatch.h"
+#include "FeatureMatching.h"
 #include "Optimizer.h"
 
 #include <iostream>
@@ -35,11 +36,13 @@ private:
     XtionCamera::Ptr _camera;
     ORBextractor::Ptr _orb_extractor;
     Frame::Ptr _cur_frame;
-    FMatch::Ptr _feature_match;
+    FeatureMatching::Ptr _feature_match;
     std::mutex _cur_frame_mtx;
     std::vector<Frame::Ptr> _key_frame_vec;
     std::vector<cv::DMatch> _bow_match;
 
+    int _final_good_point_num;
+    int _frames_between;
     bool _init_rdy;
     int _FeatureNum;
     float _ScaleFactor;

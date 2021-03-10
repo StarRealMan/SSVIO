@@ -12,6 +12,7 @@ XtionCamera::XtionCamera(Config::Ptr config)
     _InnerCy = config->GetParam<float>("InnerCy");
     _InnerFx = config->GetParam<float>("InnerFx");
     _InnerFy = config->GetParam<float>("InnerFy");
+    _DepthScale = config->GetParam<float>("DepthScale")/65535.0;
     _InvInnerFx = 1/_InnerFx;
     _InvInnerFy = 1/_InnerFy;
 
@@ -101,7 +102,6 @@ XtionCamera::XtionCamera(Config::Ptr config)
 	}
 
     _ImgDepthCoe = 65535.0/(_stream_depth.getMaxPixelValue());
-    _DepthScale = 1.0/(_ImgDepthCoe*1000.0);
 
     _rgb_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
 

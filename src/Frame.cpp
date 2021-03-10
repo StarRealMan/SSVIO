@@ -13,10 +13,27 @@ Frame::~Frame()
     
 }
 
-void Frame::CheckKeyFrame(Eigen::Matrix4f transform)
+void Frame::CheckKeyFrame(Eigen::Matrix4f transform, int good_point_num, int frames_between)
 {
-
-    // SetKeyFrame()
+    if(frames_between > _MaxFramesBetween)
+    {
+        SetKeyFrame();
+    }
+    else if(frames_between < _MinFramesBetween)
+    {
+        return;
+    }
+    else
+    {
+        if(good_point_num > _MaxGoodPointThres)
+        {
+            return;
+        }
+        else
+        {
+            return;
+        }
+    }
 }
 
 bool Frame::IsKeyFrame()
@@ -70,7 +87,7 @@ cv::Point3f Frame::Get3DPoint(int index)
     pos_x = _key_point_vec[index].pt.x;
     pos_y = _key_point_vec[index].pt.y;
     
-    ushort depth = _d_img.at<ushort>(pos_y, pos_x)*_DepthScale;
+    float depth = _d_img.at<ushort>(pos_y, pos_x)*_DepthScale;
 
     temp_3d_point.x = (pos_x - _InnerCx)*depth*_InvInnerFx;
     temp_3d_point.y = (pos_y - _InnerCy)*depth*_InvInnerFy;

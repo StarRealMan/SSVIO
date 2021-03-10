@@ -10,6 +10,7 @@ InnerCx           : 160.5912
 InnerCy           : 120.4792
 InnerFx           : 253.0589
 InnerFy           : 254.1649
+DepthScale        : 10.0
 
 #VO
 FeatureNum        : 1000
@@ -21,6 +22,11 @@ MinThFAST         : 7
 #Map
 Voxel_size        : 100.0
 
-#DBoW
+#FeatureMatching
 Threshold         : 50
 NNRatio           : 0.6
+
+#KeyFrame
+MaxGoodPointThres : 100
+MaxFramesBetween  : 30
+MinFramesBetween  : 8

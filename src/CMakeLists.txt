@@ -1,7 +1,7 @@
 add_library(libSSVIO SHARED
             Config.cpp
             Feature.cpp
-            FMatch.cpp
+            FeatureMatching.cpp
             Frame.cpp
             IMU.cpp
             Local.cpp
