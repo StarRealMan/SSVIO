@@ -31,7 +31,7 @@ void Frame::CheckKeyFrame(Eigen::Matrix4f transform, int good_point_num, int fra
         }
         else
         {
-            return;
+            SetKeyFrame();
         }
     }
 }
@@ -46,6 +46,8 @@ void Frame::SetKeyFrame()
 {
     std::lock_guard<std::mutex> lck(_is_key_frame_mtx);
     _is_key_frame = true;
+    _key_frame_id = _key_frame_point_num;
+    _key_frame_point_num++;
 }
 
 cv::Mat Frame::GetDImage()
@@ -94,4 +96,30 @@ cv::Point3f Frame::Get3DPoint(int index)
     temp_3d_point.z = depth;
 
     return temp_3d_point;
+}
+
+int Frame::GetID()
+{
+    if(_is_key_frame)
+    {
+        std::lock_guard<std::mutex> lck(_id_mtx);
+        return _key_frame_id;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void Frame::AddObserveIdx(int img_point_idx, int map_point_id)
+{
+    std::pair<int, int> idx_pair;
+    idx_pair.first = img_point_idx;
+    idx_pair.second = map_point_id;
+    _idx_pair_vec.push_back(idx_pair);
+}
+
+void Frame::GetObserveIdx(std::vector<std::pair<int, int>> &idx_pair_vec)
+{
+    idx_pair_vec = _idx_pair_vec;
 }

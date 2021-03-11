@@ -95,24 +95,11 @@ After running ./run_visual_reconstruct, you will see three windows:
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Bug
-* Sometimes image grabbed has error (maybe lock error ?)
-* New method to pick good match points
+* Check Key Frame Method
 * Poor match points need to be kicked while optimizing dynamicaly
-* Process time gets longer(200ms) as cloud gets bigger, causing error of pose estimation.  
-* Voxelization is not suitable(maybe adding another thread to process mmapping?)
-1.嵌入式部分陀螺仪反馈通讯并且加入优化（松耦合）
-
-2.里程计解算改用特征点粗配准+ICP精配准（加入光度信息）
-
-3.实时语义分割数据的利用方式思考（如何加入进点云配准）
-
-4.建图部分参考KinectFusion使用概率模型进行表面重建
-
-5.g2o动态去除误匹配点
 
 
 ## Author
-
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)
 
 Student from HITSZ Automatic Control NRS-lab

@@ -7,6 +7,7 @@ add_library(libSSVIO SHARED
             Local.cpp
             Loop.cpp
             Map.cpp
+            MapPoint.cpp
             Odometry.cpp
             Optimizer.cpp
             Viewer.cpp

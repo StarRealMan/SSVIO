@@ -65,12 +65,16 @@ public:
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T = v->estimate();
-        _error = T.cast<double>() * _key_frame_point.cast<double>() - _measurement.cast<double>();
+        _error = _measurement.cast<double>() - T.cast<double>() * _key_frame_point.cast<double>();
     }
 
     virtual void linearizeOplus() override
     {
-        // ???
+        const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
+        SE3 T = v->estimate();
+        Eigen::Vector3f pos_cam = T * _key_frame_point;
+        _jacobianOplusXi.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
+        _jacobianOplusXi.block<3,3>(0,3) =  Sophus::SO3d::hat(pos_cam.cast<double>());
     }
 
     virtual bool read(std::istream &in) override

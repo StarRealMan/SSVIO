@@ -5,6 +5,7 @@
 #include "Xtion_Driver.h"
 #include "Config.h"
 #include "Frame.h"
+#include "MapPoint.h"
 
 Config::Ptr config(new Config("../config/default_conf.yaml"));
 
@@ -19,11 +20,15 @@ double Frame::_DepthScale = config->GetParam<float>("DepthScale")/65535.0;
 float Frame::_InvInnerFx = 1/Frame::_InnerFx;
 float Frame::_InvInnerFy = 1/Frame::_InnerFy;
 
+int Frame::_key_frame_point_num = 0;
+int MapPoint::_map_point_num = 0;
+
 int main(int argc, char** argv)
 {
     XtionCamera::Ptr camera(new XtionCamera(config));
 	cout << "Camera Init OK!" << endl;
-    Odometry::Ptr odometry(new Odometry(camera, config));
+    Map::Ptr map(new Map());
+    Odometry::Ptr odometry(new Odometry(camera, map, config));
 	cout << "Odometry Init OK!" << endl;
     Viewer::Ptr viewer(new Viewer(camera, odometry));
 	cout << "Viewer Init OK!" << endl;

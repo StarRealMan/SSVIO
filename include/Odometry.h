@@ -11,6 +11,7 @@
 #include "Frame.h"
 #include "FeatureMatching.h"
 #include "Optimizer.h"
+#include "Map.h"
 
 #include <iostream>
 #include <vector>
@@ -23,7 +24,7 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Odometry> Ptr;
 
-    Odometry(XtionCamera::Ptr camera, Config::Ptr config);
+    Odometry(XtionCamera::Ptr camera, Map::Ptr map, Config::Ptr config);
     ~Odometry();
 
     void OdometryLoop();
@@ -34,14 +35,14 @@ public:
 
 private:
     XtionCamera::Ptr _camera;
+    Map::Ptr _map;
     ORBextractor::Ptr _orb_extractor;
     Frame::Ptr _cur_frame;
     FeatureMatching::Ptr _feature_match;
     std::mutex _cur_frame_mtx;
-    std::vector<Frame::Ptr> _key_frame_vec;
     std::vector<cv::DMatch> _bow_match;
+    std::vector<cv::DMatch> _final_good_match;
 
-    int _final_good_point_num;
     int _frames_between;
     bool _init_rdy;
     int _FeatureNum;

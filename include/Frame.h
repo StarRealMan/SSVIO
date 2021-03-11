@@ -31,7 +31,11 @@ public:
     cv::Mat GetDescriptor();
     void SetAbsPose(Eigen::Matrix4f pose);
     cv::Point3f Get3DPoint(int index);
+    int GetID();
+    void AddObserveIdx(int img_point_idx, int map_point_id);
+    void GetObserveIdx(std::vector<std::pair<int, int>> &idx_pair_vec);
 
+    static int _key_frame_point_num;
     static float _InnerCx;
     static float _InnerCy;
     static float _InnerFx;
@@ -48,7 +52,9 @@ private:
     cv::Mat _d_img;
     cv::Mat _descriptor;
     bool _is_key_frame;
+    int _key_frame_id;
     Eigen::Matrix4f _rel_abs_pos;
+    std::vector<std::pair<int, int>> _idx_pair_vec;
 
     std::vector<cv::KeyPoint> _key_point_vec;
     std::mutex _is_key_frame_mtx;
@@ -56,7 +62,7 @@ private:
     std::mutex _rgb_image_mtx;
     std::mutex _key_points_mtx;
     std::mutex _descriptor_mtx;
-
+    std::mutex _id_mtx;
 };
 
 #endif

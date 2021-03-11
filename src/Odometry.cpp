@@ -1,8 +1,9 @@
 #include "Odometry.h"
 
-Odometry::Odometry(XtionCamera::Ptr camera, Config::Ptr config)
+Odometry::Odometry(XtionCamera::Ptr camera, Map::Ptr map, Config::Ptr config)
 {
     _camera = camera;
+    _map = map;
     _FeatureNum = config->GetParam<int>("FeatureNum");
     _ScaleFactor = config->GetParam<float>("ScaleFactor");
     _LevelNum = config->GetParam<int>("LevelNum");
@@ -36,9 +37,8 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
     std::vector<cv::Point3f> key_frame_3d_point_set;
     std::vector<cv::Point2f> cur_frame_2d_point_set;
     std::vector<cv::Point3f> cur_frame_3d_point_set;
+    std::vector<cv::DMatch> pre_good_match;
     cv::Mat r_vec, t_vec;
-    
-    _final_good_point_num = 0;
 
     for(unsigned int i = 0; i < _bow_match.size(); i++)
     {
@@ -46,7 +46,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
         cv::Point2f cur_frame_point_2d;
         cv::DMatch match = _bow_match[i];
 
-        key_frame_point = _key_frame_vec.back()->Get3DPoint(match.trainIdx);
+        key_frame_point = _map->GetKeyFrames(-1)->Get3DPoint(match.trainIdx);
         if(key_frame_point.z >= Frame::_DepthScale)
         {
             key_frame_3d_point_set.push_back(key_frame_point);
@@ -57,12 +57,16 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
             cv::Point3f cur_frame_point_3d;
             cur_frame_point_3d = _cur_frame->Get3DPoint(match.queryIdx);
             cur_frame_3d_point_set.push_back(cur_frame_point_3d);
+
+            pre_good_match.push_back(match);
         }
     }
 
     if(key_frame_3d_point_set.size() > 12)
     {
-        cv::solvePnP(key_frame_3d_point_set,cur_frame_2d_point_set, _InnerK, cv::Mat(), r_vec, t_vec);
+        cv::Mat pnp_inliers;
+        cv::solvePnPRansac(key_frame_3d_point_set,cur_frame_2d_point_set, _InnerK, cv::Mat(),
+                           r_vec, t_vec, false, 100, (8.0F), 0.99, pnp_inliers);
         cv::Mat R, t;
 
         cv::Rodrigues(r_vec, R);
@@ -85,7 +89,8 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
 
     Optimizer::Ptr optimizer(new Optimizer);
     optimizer->AddPose(transform);
-    for(unsigned int i = 0; i < key_frame_3d_point_set.size(); i++)
+
+    for(unsigned int i = 0; i < pre_good_match.size(); i++)
     {
         cv::Point3f key_frame_point;
         cv::Point3f cur_frame_point;
@@ -96,14 +101,18 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
         if(cur_frame_point.z >= Frame::_DepthScale)
         {
             optimizer->AddMeasure(key_frame_point, cur_frame_point, i);
-            _final_good_point_num++;
+            _final_good_match.push_back(pre_good_match[i]);
         }
     }
 
-    if(_final_good_point_num > 10)
+    if(_final_good_match.size() > 10)
     {
         std::cout << "Start Optimize" << std::endl;
-        optimizer->DoOptimization(10);
+        optimizer->DoOptimization(20);
+    }
+    else
+    {
+        std::cout << "Not Enough Good Points" << std::endl;
     }
     
     transform = optimizer->GetPose();
@@ -130,12 +139,13 @@ void Odometry::OdometryLoop()
 
             if(!_init_rdy)
             {
-                _key_frame_vec.push_back(_cur_frame);
+                _map->Set2KeyFrameVec(_cur_frame);
                 _cur_frame->SetKeyFrame();
                 _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
                 last_key_frame_pose = Eigen::Matrix4f::Identity();
                 last_key_frame_desp = _cur_frame->GetDescriptor();
                 _init_rdy = true;
+                std::cout << "Add a Key Frame, Now Num: " << _map->GetKeyFrameNum() << std::endl;
             }
             else
             {
@@ -148,20 +158,23 @@ void Odometry::OdometryLoop()
                 transform = OptimizeTransform();
                 std::cout << transform << std::endl;
 
-                _cur_frame->CheckKeyFrame(transform, _final_good_point_num, _frames_between);
+                _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
                 if(_cur_frame->IsKeyFrame())
                 {
                     last_key_frame_pose = transform * last_key_frame_pose;
                     _cur_frame->SetAbsPose(last_key_frame_pose);
-                    _key_frame_vec.push_back(_cur_frame);
+                    _map->Set2KeyFrameVec(_cur_frame);
+                    _map->TrackMapPoints(_final_good_match);
                     last_key_frame_desp = cur_frame_desp;
                     _frames_between = 0;
-                    std::cout << "Add a Key Frame, Now Num: " << _key_frame_vec.size() << std::endl;
+                    std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;
+                    std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;
                 }
                 else
                 {
                     _frames_between++;
                 }
+                _final_good_match.clear();
             }
 
             auto t2 = std::chrono::steady_clock::now();
