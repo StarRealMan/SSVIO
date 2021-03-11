@@ -39,7 +39,6 @@ private:
     ORBextractor::Ptr _orb_extractor;
     Frame::Ptr _cur_frame;
     FeatureMatching::Ptr _feature_match;
-    std::mutex _cur_frame_mtx;
     std::vector<cv::DMatch> _bow_match;
     std::vector<cv::DMatch> _final_good_match;
 
@@ -54,6 +53,7 @@ private:
 
     std::atomic<bool> _odometry_running;
     std::thread _odometry_thread;
+    std::mutex _cur_frame_mtx;
 
 };
 

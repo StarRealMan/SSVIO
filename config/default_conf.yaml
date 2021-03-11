@@ -30,3 +30,6 @@ NNRatio           : 0.6
 MaxGoodPointThres : 100
 MaxFramesBetween  : 30
 MinFramesBetween  : 8
+
+#Local
+WindowSize        : 10

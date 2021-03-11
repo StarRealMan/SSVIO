@@ -1,6 +1,6 @@
 #include "Optimizer.h"
 
-Optimizer::Optimizer()
+OdomOptimizer::OdomOptimizer()
 {
     typedef g2o::BlockSolver_6_3 BlockSolverType;
     typedef g2o::LinearSolverDense<BlockSolverType::PoseMatrixType> LinearSolverType;
@@ -9,20 +9,20 @@ Optimizer::Optimizer()
     _optimizer.setAlgorithm(solver);
 }
 
-Optimizer::~Optimizer()
+OdomOptimizer::~OdomOptimizer()
 {
 
 }
 
 
-void Optimizer::DoOptimization(int optim_round)
+void OdomOptimizer::DoOptimization(int optim_round)
 {
     // do edge outlier check
     _optimizer.initializeOptimization();
     _optimizer.optimize(optim_round);
 }
 
-void Optimizer::AddPose(Eigen::Matrix4f pose_val)
+void OdomOptimizer::AddPose(Eigen::Matrix4f pose_val)
 {
      _vertex_pose= new VertexPose();
     _optimze_val = SE3(pose_val);
@@ -31,7 +31,7 @@ void Optimizer::AddPose(Eigen::Matrix4f pose_val)
     _optimizer.addVertex(_vertex_pose);
 }
 
-void Optimizer::AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id)
+void OdomOptimizer::AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id)
 {
     Eigen::Matrix<float, 3, 1> refered_point;
     Eigen::Matrix<float, 3, 1> measured_point;
@@ -48,7 +48,41 @@ void Optimizer::AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured
     _optimizer.addEdge(edge);
 }
 
-Eigen::Matrix4f Optimizer::GetPose()
+Eigen::Matrix4f OdomOptimizer::GetPose()
 {
     return _optimze_val.matrix();
 }
+
+
+
+LocalOptimizer::LocalOptimizer()
+{
+
+}
+
+LocalOptimizer::~LocalOptimizer()
+{
+
+}
+
+void LocalOptimizer::DoOptimization(int optim_round)
+{
+
+}
+
+void LocalOptimizer::AddPose(Eigen::Matrix4f pose_val, int pose_id)
+{
+
+}
+
+void LocalOptimizer::AddPoint(cv::Point3f cv_map_point, int measure_id)
+{
+
+}
+
+void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id)
+{
+
+}
+
+

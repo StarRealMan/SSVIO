@@ -87,7 +87,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
         transform = Eigen::Matrix4f::Identity();
     }
 
-    Optimizer::Ptr optimizer(new Optimizer);
+    OdomOptimizer::Ptr optimizer(new OdomOptimizer);
     optimizer->AddPose(transform);
 
     for(unsigned int i = 0; i < pre_good_match.size(); i++)

@@ -6,6 +6,7 @@
 #include "Config.h"
 #include "Frame.h"
 #include "MapPoint.h"
+#include "Local.h"
 
 Config::Ptr config(new Config("../config/default_conf.yaml"));
 
@@ -28,8 +29,11 @@ int main(int argc, char** argv)
     XtionCamera::Ptr camera(new XtionCamera(config));
 	cout << "Camera Init OK!" << endl;
     Map::Ptr map(new Map());
+	cout << "Map Init OK!" << endl;
     Odometry::Ptr odometry(new Odometry(camera, map, config));
 	cout << "Odometry Init OK!" << endl;
+    Local::Ptr local(new Local(map, config));
+	cout << "Local Init OK!" << endl;
     Viewer::Ptr viewer(new Viewer(camera, odometry));
 	cout << "Viewer Init OK!" << endl;
 
@@ -40,6 +44,8 @@ int main(int argc, char** argv)
 
 	viewer->ViewerStop();
 	std::cout << "Viewer closed!" << std::endl;
+    local->LocalStop();
+    std::cout << "Local closed!" << std::endl;
     odometry->OdometryStop();
     std::cout << "Odometry closed!" << std::endl;
 	camera->CameraStop();

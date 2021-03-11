@@ -54,6 +54,34 @@ public:
     }
 };
 
+class VertexPoint : public g2o::BaseVertex<3, Eigen::Vector3f>
+{
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+    virtual void setToOriginImpl() override
+    {
+        _estimate = Eigen::Vector3f::Zero();
+    }
+
+    virtual void oplusImpl(const double *update) override
+    {
+        Eigen::Matrix<float, 3, 1> update_eigen;
+        update_eigen << update[0], update[1], update[2];
+        _estimate = update_eigen + _estimate;
+    }
+
+    virtual bool read(std::istream &in) override
+    {
+        return true;
+    }
+
+    virtual bool write(std::ostream &out) const override
+    {
+        return true;
+    }
+};
+
 class EdgeProjectionPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Vector3f, VertexPose>
 {
 public:
@@ -91,13 +119,61 @@ private:
     Eigen::Vector3f _key_frame_point;
 };
 
-class Optimizer
+class EdgeProjectionPosePoint : public g2o::BaseBinaryEdge<3, Eigen::Vector3f, VertexPose, VertexPoint>
 {
 public:
-    typedef std::shared_ptr<Optimizer> Ptr;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    Optimizer();
-    ~Optimizer();
+    EdgeProjectionPosePoint():BaseBinaryEdge(){}
+
+    virtual void computeError() override
+    {
+        const VertexPose *pose = static_cast<VertexPose *>(_vertices[0]);
+        const VertexPoint *point = static_cast<VertexPoint *>(_vertices[1]);
+        
+        SE3 T = pose->estimate();
+        Eigen::Vector3f P = point->estimate();
+        _error = _measurement.cast<double>() - T.cast<double>() * P.cast<double>();
+    }
+
+    virtual void linearizeOplus() override
+    {
+        const VertexPose *pose = static_cast<VertexPose *>(_vertices[0]);
+        const VertexPoint *point = static_cast<VertexPoint *>(_vertices[1]);
+        SE3 T = pose->estimate();
+        Eigen::Vector3f P = point->estimate();
+        Eigen::Vector3f pos_cam = T * P;
+        _jacobianOplusXi.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
+        _jacobianOplusXi.block<3,3>(0,3) =  Sophus::SO3d::hat(pos_cam.cast<double>());
+
+        _jacobianOplusXj = T.matrix().block<3,3>(0,0).cast<double>();
+    }
+
+    virtual bool read(std::istream &in) override
+    {
+        return true;
+    }
+
+    virtual bool write(std::ostream &out) const override
+    {
+        return true;
+    }
+
+private:
+    Eigen::Vector3f _key_frame_point;
+};
+
+
+
+
+
+class OdomOptimizer
+{
+public:
+    typedef std::shared_ptr<OdomOptimizer> Ptr;
+
+    OdomOptimizer();
+    ~OdomOptimizer();
 
     void DoOptimization(int optim_round);
     void AddPose(Eigen::Matrix4f pose_val);
@@ -109,6 +185,25 @@ private:
     VertexPose *_vertex_pose;
     SE3 _optimze_val;
 };
+
+class LocalOptimizer
+{
+public:
+    typedef std::shared_ptr<LocalOptimizer> Ptr;
+
+    LocalOptimizer();
+    ~LocalOptimizer();
+
+    void DoOptimization(int optim_round);
+    void AddPose(Eigen::Matrix4f pose_val, int pose_id);
+    void AddPoint(cv::Point3f cv_map_point, int measure_id);
+    void AddMeasure(cv::Point3f cv_measured_point, int measure_id);
+
+private:
+    g2o::SparseOptimizer _optimizer;
+
+};
+
 
 #endif
 
