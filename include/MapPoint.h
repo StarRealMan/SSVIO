@@ -17,9 +17,8 @@ public:
 
     void SetObserve(int key_frame_id);
     int GetID();
-
     static int _map_point_num;
-    
+
 private:
     int _map_point_id;
     cv::Point3f _map_point_pos;

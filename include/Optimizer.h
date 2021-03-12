@@ -170,6 +170,8 @@ private:
 class OdomOptimizer
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
     typedef std::shared_ptr<OdomOptimizer> Ptr;
 
     OdomOptimizer();
@@ -189,6 +191,8 @@ private:
 class LocalOptimizer
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
     typedef std::shared_ptr<LocalOptimizer> Ptr;
 
     LocalOptimizer();
@@ -197,11 +201,14 @@ public:
     void DoOptimization(int optim_round);
     void AddPose(Eigen::Matrix4f pose_val, int pose_id);
     void AddPoint(cv::Point3f cv_map_point, int measure_id);
-    void AddMeasure(cv::Point3f cv_measured_point, int measure_id);
+    void AddMeasure(cv::Point3f cv_measured_point, int measure_id, int pose_id, int point_id);
 
 private:
     g2o::SparseOptimizer _optimizer;
-
+    std::vector<VertexPose*> _vertex_pose_vec;
+    std::vector<VertexPoint*> _vertex_point_vec;
+    std::vector<Eigen::Vector3f> _optimze_point_val_vec;
+    std::vector<SE3> _optimze_pose_val_vec;
 };
 
 

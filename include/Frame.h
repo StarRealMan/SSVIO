@@ -35,7 +35,6 @@ public:
     void AddObserveIdx(int img_point_idx, int map_point_id);
     void GetObserveIdx(std::vector<std::pair<int, int>> &idx_pair_vec);
 
-    static int _key_frame_point_num;
     static float _InnerCx;
     static float _InnerCy;
     static float _InnerFx;
@@ -46,6 +45,7 @@ public:
     static int _MaxGoodPointThres;
     static int _MaxFramesBetween;
     static int _MinFramesBetween;
+    static int _key_frame_point_num;
 
 private:
     cv::Mat _rgb_img;

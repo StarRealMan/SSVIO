@@ -33,3 +33,8 @@ MinFramesBetween  : 8
 
 #Local
 WindowSize        : 10
+
+#IMU
+IMUDevNum         : 0
+MaxBufferLen      : 100
+DataLen           : 32
