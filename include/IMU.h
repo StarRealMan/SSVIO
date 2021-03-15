@@ -11,6 +11,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <string>
 
 class IMU
 {
@@ -22,7 +23,9 @@ public:
     void send(unsigned char* ch, size_t length);
     void receive(unsigned char* buff, size_t& length);
     void ReceivePack();
-    void GetIMUData(Eigen::Matrix3f &IMU_rotate, Eigen::Vector3f &IMU_acc);
+    void GetIMURotateData(Eigen::Matrix3f &IMU_rotate);
+    void GetIMUTransitData(Eigen::Vector3f &IMU_acc);
+    void AccIntegrate();
 
     void IMULoop();
     void IMUStop();
@@ -39,10 +42,13 @@ private:
     Eigen::Quaternionf _IMU_quaternion;
     Eigen::Matrix3f _IMU_rotate;
     Eigen::Vector3f _IMU_acc;
+    Eigen::Vector3f _IMU_vel;
+    Eigen::Vector3f _IMU_transit;
 
     std::atomic<bool> _IMU_running;
     std::thread _IMU_thread;
-    std::mutex _IMU_data_mtx;
+    std::mutex _IMU_rotate_data_mtx;
+    std::mutex _IMU_transit_data_mtx;
 
     union UcharNFloat
     {
@@ -52,8 +58,11 @@ private:
 
     static const unsigned char _HEAD1 = 0x55;
     static const unsigned char _HEAD2 = 0x00;
-    static const unsigned char _TAIL1 = 0x00;
-    static const unsigned char _TAIL2 = 0xAA;
+    static const unsigned char _HEAD3 = 0x00;
+    static const unsigned char _HEAD4 = 0xAA;
+    
+    // Harbin
+    static constexpr float _Gravity = 9.8066;
 };
 
 #endif

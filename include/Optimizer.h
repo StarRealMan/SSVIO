@@ -23,6 +23,8 @@
 #include <thread>
 #include <mutex>
 
+#include "Config.h"
+
 typedef Sophus::SE3f SE3;
 typedef Sophus::SO3f SO3;
 
@@ -82,12 +84,12 @@ public:
     }
 };
 
-class EdgeProjectionPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Vector3f, VertexPose>
+class EdgeICPPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Vector3f, VertexPose>
 {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeProjectionPoseOnly(const Eigen::Vector3f &key_frame_point):BaseUnaryEdge(), _key_frame_point(key_frame_point){}
+    EdgeICPPoseOnly(const Eigen::Vector3f &key_frame_point):BaseUnaryEdge(), _key_frame_point(key_frame_point){}
 
     virtual void computeError() override
     {
@@ -119,12 +121,47 @@ private:
     Eigen::Vector3f _key_frame_point;
 };
 
-class EdgeProjectionPosePoint : public g2o::BaseBinaryEdge<3, Eigen::Vector3f, VertexPose, VertexPoint>
+class EdgeIMUPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Matrix3f, VertexPose>
 {
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeProjectionPosePoint():BaseBinaryEdge(){}
+    EdgeIMUPoseOnly(const Eigen::Matrix4f &key_frame_pose):BaseUnaryEdge(), _key_frame_pose(key_frame_pose){}
+
+    virtual void computeError() override
+    {
+        const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
+        SE3 T_curr = v->estimate();
+        SO3 T_m(_measurement);
+        SO3 T_key(_key_frame_pose.block<3,3>(0,0));
+        _error = ((T_m.cast<double>() * T_key.cast<double>()) * T_curr.so3().cast<double>().inverse()).log();
+    }
+
+    virtual void linearizeOplus() override
+    {
+        // ???
+    }
+
+    virtual bool read(std::istream &in) override
+    {
+        return true;
+    }
+
+    virtual bool write(std::ostream &out) const override
+    {
+        return true;
+    }
+
+private:
+    Eigen::Matrix4f _key_frame_pose;
+};
+
+class EdgeICPPosePoint : public g2o::BaseBinaryEdge<3, Eigen::Vector3f, VertexPose, VertexPoint>
+{
+public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+    EdgeICPPosePoint():BaseBinaryEdge(){}
 
     virtual void computeError() override
     {
@@ -179,10 +216,12 @@ public:
 
     void DoOptimization(int optim_round);
     void AddPose(Eigen::Matrix4f pose_val);
-    void AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id);
+    void AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id);
+    void AddIMUMeasure(Eigen::Matrix4f key_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id);
     Eigen::Matrix4f GetPose();
 
 private:
+    static float _IMUGain;
     g2o::SparseOptimizer _optimizer;
     VertexPose *_vertex_pose;
     SE3 _optimze_val;

@@ -1,9 +1,10 @@
 #include "Odometry.h"
 
-Odometry::Odometry(XtionCamera::Ptr camera, Map::Ptr map, Config::Ptr config)
+Odometry::Odometry(XtionCamera::Ptr camera, IMU::Ptr imu, Map::Ptr map, Config::Ptr config)
 {
     _camera = camera;
     _map = map;
+    _imu = imu;
     _FeatureNum = config->GetParam<int>("FeatureNum");
     _ScaleFactor = config->GetParam<float>("ScaleFactor");
     _LevelNum = config->GetParam<int>("LevelNum");
@@ -31,7 +32,7 @@ Frame::Ptr Odometry::GetCurFrame()
     return _cur_frame;
 }
 
-Eigen::Matrix4f Odometry::OptimizeTransform()
+Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, Eigen::Matrix3f imu_rotate_data)
 {
     Eigen::Matrix4f transform;
     std::vector<cv::Point3f> key_frame_3d_point_set;
@@ -39,6 +40,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
     std::vector<cv::Point3f> cur_frame_3d_point_set;
     std::vector<cv::DMatch> pre_good_match;
     cv::Mat r_vec, t_vec;
+    int edge_num = 0;
 
     for(unsigned int i = 0; i < _bow_match.size(); i++)
     {
@@ -100,22 +102,25 @@ Eigen::Matrix4f Odometry::OptimizeTransform()
 
         if(cur_frame_point.z >= Frame::_DepthScale)
         {
-            optimizer->AddMeasure(key_frame_point, cur_frame_point, i);
+            optimizer->AddCVMeasure(key_frame_point, cur_frame_point, edge_num);
             _final_good_match.push_back(pre_good_match[i]);
+            edge_num++;
         }
     }
+    optimizer->AddIMUMeasure(last_keyframe_pose, imu_rotate_data, edge_num);
 
     if(_final_good_match.size() > 10)
     {
         std::cout << "Start Optimize" << std::endl;
         optimizer->DoOptimization(20);
+        transform = optimizer->GetPose();
     }
     else
     {
         std::cout << "Not Enough Good Points" << std::endl;
+        transform = optimizer->GetPose();
     }
     
-    transform = optimizer->GetPose();
     return transform;
 }
 
@@ -125,6 +130,9 @@ void Odometry::OdometryLoop()
     Eigen::Matrix4f last_key_frame_pose;
     cv::Mat cur_frame_desp;
     cv::Mat last_key_frame_desp;
+    Eigen::Matrix3f last_imu_rotate_data;
+    Eigen::Matrix3f imu_trans_measure;
+    Eigen::Matrix3f imu_rotate_data;
 
     while(_odometry_running.load())
     {
@@ -155,7 +163,11 @@ void Odometry::OdometryLoop()
                 _feature_match->MatchByDBoW(cur_frame_desp, last_key_frame_desp, _bow_match);
                 std::cout << "Found " << _bow_match.size() << " Matches" << std::endl;
 
-                transform = OptimizeTransform();
+
+                _imu->GetIMURotateData(imu_rotate_data);
+                imu_trans_measure = imu_rotate_data * last_imu_rotate_data.inverse();
+
+                transform = OptimizeTransform(last_key_frame_pose, imu_trans_measure);
                 std::cout << transform << std::endl;
 
                 _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
@@ -166,6 +178,7 @@ void Odometry::OdometryLoop()
                     _map->Set2KeyFrameVec(_cur_frame);
                     _map->TrackMapPoints(_final_good_match);
                     last_key_frame_desp = cur_frame_desp;
+                    last_imu_rotate_data = imu_rotate_data;
                     _frames_between = 0;
                     std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;
                     std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;

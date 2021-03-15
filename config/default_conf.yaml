@@ -36,5 +36,9 @@ WindowSize        : 10
 
 #IMU
 IMUDevNum         : 0
+BaudRate          : 460800
 MaxBufferLen      : 100
 DataLen           : 32
+
+#Optimizer
+IMUGain           : 1.0

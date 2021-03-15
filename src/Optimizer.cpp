@@ -31,7 +31,7 @@ void OdomOptimizer::AddPose(Eigen::Matrix4f pose_val)
     _optimizer.addVertex(_vertex_pose);
 }
 
-void OdomOptimizer::AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id)
+void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id)
 {
     Eigen::Matrix<float, 3, 1> refered_point;
     Eigen::Matrix<float, 3, 1> measured_point;
@@ -39,11 +39,25 @@ void OdomOptimizer::AddMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_meas
     refered_point << cv_refered_point.x, cv_refered_point.y, cv_refered_point.z;
     measured_point << cv_measured_point.x, cv_measured_point.y, cv_measured_point.z;
 
-    EdgeProjectionPoseOnly *edge = new EdgeProjectionPoseOnly(refered_point);
+    EdgeICPPoseOnly *edge = new EdgeICPPoseOnly(refered_point);
     edge->setId(measure_id);
     edge->setVertex(0, _vertex_pose);
     edge->setMeasurement(measured_point);
     edge->setInformation(Eigen::Matrix3d::Identity());
+    edge->setRobustKernel(new g2o::RobustKernelHuber);
+    _optimizer.addEdge(edge);
+}
+
+void OdomOptimizer::AddIMUMeasure(Eigen::Matrix4f key_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id)
+{
+    Eigen::Matrix<float, 3, 1> refered_point;
+    Eigen::Matrix<float, 3, 1> measured_point;
+
+    EdgeIMUPoseOnly *edge = new EdgeIMUPoseOnly(key_frame_pose);
+    edge->setId(measure_id);
+    edge->setVertex(0, _vertex_pose);
+    edge->setMeasurement(imu_measured_pose);
+    edge->setInformation(Eigen::Matrix3d::Identity() * _IMUGain);
     edge->setRobustKernel(new g2o::RobustKernelHuber);
     _optimizer.addEdge(edge);
 }
@@ -104,7 +118,7 @@ void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id, i
 
     measured_point << cv_measured_point.x, cv_measured_point.y, cv_measured_point.z;
 
-    EdgeProjectionPosePoint *edge = new EdgeProjectionPosePoint();
+    EdgeICPPosePoint *edge = new EdgeICPPosePoint();
     edge->setId(measure_id);
     edge->setVertex(0, _vertex_pose_vec[pose_id]);
     edge->setVertex(1, _vertex_point_vec[point_id]);

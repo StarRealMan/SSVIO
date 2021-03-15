@@ -97,7 +97,8 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 ## Bug
 * Check Key Frame Method
 * Poor match points need to be kicked while optimizing dynamicaly
-
+* Use solve pnp RANSAC to filter outliers
+* When not enough good points, use imu measurement
 
 ## Author
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)

@@ -12,6 +12,7 @@
 #include "FeatureMatching.h"
 #include "Optimizer.h"
 #include "Map.h"
+#include "IMU.h"
 
 #include <iostream>
 #include <vector>
@@ -24,17 +25,18 @@ public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Odometry> Ptr;
 
-    Odometry(XtionCamera::Ptr camera, Map::Ptr map, Config::Ptr config);
+    Odometry(XtionCamera::Ptr camera, IMU::Ptr imu, Map::Ptr map, Config::Ptr config);
     ~Odometry();
 
     void OdometryLoop();
     void OdometryStop();
 
     Frame::Ptr GetCurFrame();
-    Eigen::Matrix4f OptimizeTransform();
+    Eigen::Matrix4f OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, Eigen::Matrix3f imu_rotate_data);
 
 private:
     XtionCamera::Ptr _camera;
+    IMU::Ptr _imu;
     Map::Ptr _map;
     ORBextractor::Ptr _orb_extractor;
     Frame::Ptr _cur_frame;
