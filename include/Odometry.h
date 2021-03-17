@@ -32,7 +32,9 @@ public:
     void OdometryStop();
 
     Frame::Ptr GetCurFrame();
-    Eigen::Matrix4f OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, Eigen::Matrix3f imu_rotate_data);
+    Eigen::Matrix4f OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
+                                      Eigen::Matrix3f imu_rotate_data,
+                                      Eigen::Vector3f imu_trans_t_measure);
 
 private:
     XtionCamera::Ptr _camera;

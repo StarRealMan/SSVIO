@@ -8,7 +8,8 @@ int main(int argc, char** argv)
 
     while(1)
     {
-        imu->GetIMURotateData(mat, vec);
+        imu->GetIMURotateData(mat);
+        imu->GetIMUTransitData(vec);
         std::cout << mat << std::endl;
         std::cout << vec << std::endl;
         sleep(1);

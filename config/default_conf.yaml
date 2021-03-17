@@ -41,4 +41,4 @@ MaxBufferLen      : 100
 DataLen           : 32
 
 #Optimizer
-IMUGain           : 1.0
+IMUGain           : 0.0

@@ -12,15 +12,26 @@ IMU::IMU(Config::Ptr config)
     std::string dev_head = "/dev/ttyUSB";
     dev_name << dev_head << std::to_string(_IMUDevNum);
 
-    std::cout << "logging in " << dev_name.str().c_str() << std::endl;
+    std::ifstream fdev(dev_name.str().c_str());
+    if(fdev)
+    {
+        _io = new boost::asio::io_service;
+        _port = new boost::asio::serial_port(*_io, dev_name.str().c_str());
+        _port->set_option(boost::asio::serial_port::baud_rate(_BaudRate));
+        _port->set_option(boost::asio::serial_port::flow_control());
+        _port->set_option(boost::asio::serial_port::parity());
+        _port->set_option(boost::asio::serial_port::stop_bits());
+        _port->set_option(boost::asio::serial_port::character_size(8));
 
-    _io = new boost::asio::io_service;
-    _port = new boost::asio::serial_port(*_io, dev_name.str().c_str());
-    _port->set_option(boost::asio::serial_port::baud_rate(_BaudRate));
-    _port->set_option(boost::asio::serial_port::flow_control());
-    _port->set_option(boost::asio::serial_port::parity());
-    _port->set_option(boost::asio::serial_port::stop_bits());
-    _port->set_option(boost::asio::serial_port::character_size(8));
+        std::cout << "Link to UART device " << dev_name.str().c_str() << std::endl;
+    }
+    else
+    {
+        std::cout << "No UART device name " << dev_name.str().c_str() << " found, exit" << std::endl;
+        exit(0);
+    }
+
+    _IMU2Cam << 1, 0, 0, 0, 0, -1, 0, 1, 0;
 
     _IMU_running.store(true);
     _IMU_thread = std::thread(std::bind(&IMU::IMULoop,this));
@@ -70,9 +81,9 @@ void IMU::ReceivePack()
                 }
 
                 Eigen::Quaternionf IMU_quaternion(data_buf[0], data_buf[1], data_buf[2], data_buf[3]);
-                _IMU_rotate = IMU_quaternion.matrix();
+                _IMU_rotate = _IMU2Cam * IMU_quaternion.normalized().matrix();
                 _IMU_acc << data_buf[4], data_buf[5], data_buf[6];
-
+                _IMU_acc = _IMU2Cam * _IMU_acc;
                 break;
             }
         }
@@ -101,17 +112,18 @@ void IMU::AccIntegrate()
     auto this_time = std::chrono::steady_clock::now();
     auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(this_time - last_time);
     float delta_time = time_used.count();
+    static Eigen::Vector3f Gravity_vec = Eigen::Vector3f(0, 0, 1000.0);
 
-    if(delta_time < 0.002)
+    _IMU_real_acc = _IMU_acc - _IMU_rotate * Gravity_vec;
+
+    if(delta_time > 0.005)
     {
-        delta_time = 0.002;
+        _IMU_vel += ((_IMU_real_acc+last_acc)*_Gravity/2000.0)*delta_time;
+        _IMU_transit += (_IMU_vel+last_vel)*delta_time/2.0;
     }
-
-    _IMU_vel += ((_IMU_acc+last_acc)*_Gravity/2000.0)*delta_time;
-    _IMU_transit += (_IMU_vel+last_vel)*delta_time/2.0;
     
     last_vel = _IMU_vel;
-    last_acc = _IMU_acc;
+    last_acc = _IMU_real_acc;
     last_time = this_time;
 }
 

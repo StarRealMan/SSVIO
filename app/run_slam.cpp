@@ -11,8 +11,8 @@ int main(int argc, char** argv)
 	cout << "IMU Init OK!" << endl;
     Odometry::Ptr odometry(new Odometry(camera, imu, map, config));
 	cout << "Odometry Init OK!" << endl;
-    Local::Ptr local(new Local(map, config));
-	cout << "Local Init OK!" << endl;
+    // Local::Ptr local(new Local(map, config));
+	// cout << "Local Init OK!" << endl;
     Viewer::Ptr viewer(new Viewer(camera, odometry));
 	cout << "Viewer Init OK!" << endl;
 
@@ -23,8 +23,8 @@ int main(int argc, char** argv)
 
 	viewer->ViewerStop();
 	std::cout << "Viewer closed!" << std::endl;
-    local->LocalStop();
-    std::cout << "Local closed!" << std::endl;
+    // local->LocalStop();
+    // std::cout << "Local closed!" << std::endl;
     odometry->OdometryStop();
     std::cout << "Odometry closed!" << std::endl;
     imu->IMUStop();

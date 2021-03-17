@@ -32,7 +32,9 @@ Frame::Ptr Odometry::GetCurFrame()
     return _cur_frame;
 }
 
-Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, Eigen::Matrix3f imu_rotate_data)
+Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, 
+                                            Eigen::Matrix3f imu_trans_measure,
+                                            Eigen::Vector3f imu_trans_t_measure)
 {
     Eigen::Matrix4f transform;
     std::vector<cv::Point3f> key_frame_3d_point_set;
@@ -107,7 +109,8 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, 
             edge_num++;
         }
     }
-    optimizer->AddIMUMeasure(last_keyframe_pose, imu_rotate_data, edge_num);
+
+    optimizer->AddIMUMeasure(last_keyframe_pose, imu_trans_measure, edge_num);
 
     if(_final_good_match.size() > 10)
     {
@@ -118,7 +121,10 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, 
     else
     {
         std::cout << "Not Enough Good Points" << std::endl;
-        transform = optimizer->GetPose();
+        transform.block<3,3>(0,0) = imu_trans_measure;
+        transform.block<3,1>(0,3) = imu_trans_t_measure;
+        transform.block<1,3>(3,0) = Eigen::RowVector3f::Zero();
+        transform(3,3) = 1;
     }
     
     return transform;
@@ -131,8 +137,11 @@ void Odometry::OdometryLoop()
     cv::Mat cur_frame_desp;
     cv::Mat last_key_frame_desp;
     Eigen::Matrix3f last_imu_rotate_data;
+    Eigen::Vector3f last_imu_transit_data;
     Eigen::Matrix3f imu_trans_measure;
+    Eigen::Vector3f imu_trans_t_measure;
     Eigen::Matrix3f imu_rotate_data;
+    Eigen::Vector3f imu_transit_data;
 
     while(_odometry_running.load())
     {
@@ -152,6 +161,8 @@ void Odometry::OdometryLoop()
                 _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
                 last_key_frame_pose = Eigen::Matrix4f::Identity();
                 last_key_frame_desp = _cur_frame->GetDescriptor();
+                last_imu_rotate_data = Eigen::Matrix3f::Identity();
+                last_imu_transit_data = Eigen::Vector3f::Zero();
                 _init_rdy = true;
                 std::cout << "Add a Key Frame, Now Num: " << _map->GetKeyFrameNum() << std::endl;
             }
@@ -163,11 +174,13 @@ void Odometry::OdometryLoop()
                 _feature_match->MatchByDBoW(cur_frame_desp, last_key_frame_desp, _bow_match);
                 std::cout << "Found " << _bow_match.size() << " Matches" << std::endl;
 
-
                 _imu->GetIMURotateData(imu_rotate_data);
+                _imu->GetIMUTransitData(imu_transit_data);
+                
                 imu_trans_measure = imu_rotate_data * last_imu_rotate_data.inverse();
+                imu_trans_t_measure = imu_transit_data - last_imu_transit_data;
 
-                transform = OptimizeTransform(last_key_frame_pose, imu_trans_measure);
+                transform = OptimizeTransform(last_key_frame_pose, imu_trans_measure, imu_trans_t_measure);
                 std::cout << transform << std::endl;
 
                 _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
@@ -179,6 +192,7 @@ void Odometry::OdometryLoop()
                     _map->TrackMapPoints(_final_good_match);
                     last_key_frame_desp = cur_frame_desp;
                     last_imu_rotate_data = imu_rotate_data;
+                    last_imu_transit_data = imu_transit_data;
                     _frames_between = 0;
                     std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;
                     std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;
