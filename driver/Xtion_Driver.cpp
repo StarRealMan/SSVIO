@@ -248,7 +248,7 @@ void XtionCamera::GrabLoop()
         GrabImage();
         auto t2 = std::chrono::steady_clock::now();
         auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-        std::cout << "Grab Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
+        // std::cout << "Grab Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
     }
 }
 

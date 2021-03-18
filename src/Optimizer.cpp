@@ -48,12 +48,12 @@ void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_me
     _optimizer.addEdge(edge);
 }
 
-void OdomOptimizer::AddIMUMeasure(Eigen::Matrix4f key_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id)
+void OdomOptimizer::AddIMUMeasure(Eigen::Matrix4f ref_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id)
 {
     Eigen::Matrix<float, 3, 1> refered_point;
     Eigen::Matrix<float, 3, 1> measured_point;
 
-    EdgeIMUPoseOnly *edge = new EdgeIMUPoseOnly(key_frame_pose);
+    EdgeIMUPoseOnly *edge = new EdgeIMUPoseOnly(ref_frame_pose);
     edge->setId(measure_id);
     edge->setVertex(0, _vertex_pose);
     edge->setMeasurement(imu_measured_pose);

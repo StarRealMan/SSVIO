@@ -32,9 +32,7 @@ public:
     void OdometryStop();
 
     Frame::Ptr GetCurFrame();
-    Eigen::Matrix4f OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
-                                      Eigen::Matrix3f imu_rotate_data,
-                                      Eigen::Vector3f imu_trans_t_measure);
+    Eigen::Matrix4f OptimizeTransform(Eigen::Matrix3f imu_rotate_data, Eigen::Vector3f imu_trans_t_measure);
 
 private:
     XtionCamera::Ptr _camera;
@@ -42,6 +40,7 @@ private:
     Map::Ptr _map;
     ORBextractor::Ptr _orb_extractor;
     Frame::Ptr _cur_frame;
+    Frame::Ptr _last_frame;
     FeatureMatching::Ptr _feature_match;
     std::vector<cv::DMatch> _bow_match;
     std::vector<cv::DMatch> _final_good_match;

@@ -5,6 +5,7 @@ int main(int argc, char** argv)
     IMU::Ptr imu(new IMU(config));
     Eigen::Vector3f vec;
     Eigen::Matrix3f mat;
+    sleep(1);
 
     while(1)
     {

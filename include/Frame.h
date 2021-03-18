@@ -30,6 +30,7 @@ public:
     std::vector<cv::KeyPoint> GetKeyPoints();
     cv::Mat GetDescriptor();
     void SetAbsPose(Eigen::Matrix4f pose);
+    Eigen::Matrix4f GetAbsPose();
     cv::Point3f Get3DPoint(int index);
     int GetID();
     void AddObserveIdx(int img_point_idx, int map_point_id);
@@ -62,6 +63,7 @@ private:
     std::mutex _rgb_image_mtx;
     std::mutex _key_points_mtx;
     std::mutex _descriptor_mtx;
+    std::mutex _pose_mtx;
     std::mutex _id_mtx;
 };
 

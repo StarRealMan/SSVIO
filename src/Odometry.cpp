@@ -32,12 +32,10 @@ Frame::Ptr Odometry::GetCurFrame()
     return _cur_frame;
 }
 
-Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose, 
-                                            Eigen::Matrix3f imu_trans_measure,
-                                            Eigen::Vector3f imu_trans_t_measure)
+Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix3f imu_trans_measure, Eigen::Vector3f imu_trans_t_measure)
 {
     Eigen::Matrix4f transform;
-    std::vector<cv::Point3f> key_frame_3d_point_set;
+    std::vector<cv::Point3f> last_frame_3d_point_set;
     std::vector<cv::Point2f> cur_frame_2d_point_set;
     std::vector<cv::Point3f> cur_frame_3d_point_set;
     std::vector<cv::DMatch> pre_good_match;
@@ -46,14 +44,14 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
 
     for(unsigned int i = 0; i < _bow_match.size(); i++)
     {
-        cv::Point3f key_frame_point;
+        cv::Point3f last_frame_point;
         cv::Point2f cur_frame_point_2d;
         cv::DMatch match = _bow_match[i];
 
-        key_frame_point = _map->GetKeyFrames(-1)->Get3DPoint(match.trainIdx);
-        if(key_frame_point.z >= Frame::_DepthScale)
+        last_frame_point = _last_frame->Get3DPoint(match.trainIdx);
+        if(last_frame_point.z >= Frame::_DepthScale)
         {
-            key_frame_3d_point_set.push_back(key_frame_point);
+            last_frame_3d_point_set.push_back(last_frame_point);
             cur_frame_point_2d.x = _cur_frame->GetKeyPoints()[match.queryIdx].pt.x;
             cur_frame_point_2d.y = _cur_frame->GetKeyPoints()[match.queryIdx].pt.y;
             cur_frame_2d_point_set.push_back(cur_frame_point_2d);
@@ -66,10 +64,10 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
         }
     }
 
-    if(key_frame_3d_point_set.size() > 12)
+    if(last_frame_3d_point_set.size() > 12)
     {
         cv::Mat pnp_inliers;
-        cv::solvePnPRansac(key_frame_3d_point_set,cur_frame_2d_point_set, _InnerK, cv::Mat(),
+        cv::solvePnPRansac(last_frame_3d_point_set,cur_frame_2d_point_set, _InnerK, cv::Mat(),
                            r_vec, t_vec, false, 100, (8.0F), 0.99, pnp_inliers);
         cv::Mat R, t;
 
@@ -96,22 +94,22 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
 
     for(unsigned int i = 0; i < pre_good_match.size(); i++)
     {
-        cv::Point3f key_frame_point;
+        cv::Point3f last_frame_point;
         cv::Point3f cur_frame_point;
 
         cur_frame_point = cur_frame_3d_point_set[i];
-        key_frame_point = key_frame_3d_point_set[i];
+        last_frame_point = last_frame_3d_point_set[i];
 
         if(cur_frame_point.z >= Frame::_DepthScale)
         {
-            optimizer->AddCVMeasure(key_frame_point, cur_frame_point, edge_num);
+            optimizer->AddCVMeasure(last_frame_point, cur_frame_point, edge_num);
             _final_good_match.push_back(pre_good_match[i]);
             edge_num++;
         }
     }
 
-    optimizer->AddIMUMeasure(last_keyframe_pose, imu_trans_measure, edge_num);
-
+    optimizer->AddIMUMeasure(_last_frame->GetAbsPose(), imu_trans_measure, edge_num);
+    
     if(_final_good_match.size() > 10)
     {
         std::cout << "Start Optimize" << std::endl;
@@ -122,7 +120,8 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix4f last_keyframe_pose,
     {
         std::cout << "Not Enough Good Points" << std::endl;
         transform.block<3,3>(0,0) = imu_trans_measure;
-        transform.block<3,1>(0,3) = imu_trans_t_measure;
+        // transform.block<3,1>(0,3) = imu_trans_t_measure;
+        transform.block<3,1>(0,3) = Eigen::Vector3f::Zero();
         transform.block<1,3>(3,0) = Eigen::RowVector3f::Zero();
         transform(3,3) = 1;
     }
@@ -134,14 +133,11 @@ void Odometry::OdometryLoop()
 {
     Eigen::Matrix4f transform;
     Eigen::Matrix4f last_key_frame_pose;
-    cv::Mat cur_frame_desp;
-    cv::Mat last_key_frame_desp;
     Eigen::Matrix3f last_imu_rotate_data;
     Eigen::Vector3f last_imu_transit_data;
     Eigen::Matrix3f imu_trans_measure;
     Eigen::Vector3f imu_trans_t_measure;
-    Eigen::Matrix3f imu_rotate_data;
-    Eigen::Vector3f imu_transit_data;
+
 
     while(_odometry_running.load())
     {
@@ -159,40 +155,41 @@ void Odometry::OdometryLoop()
                 _map->Set2KeyFrameVec(_cur_frame);
                 _cur_frame->SetKeyFrame();
                 _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
-                last_key_frame_pose = Eigen::Matrix4f::Identity();
-                last_key_frame_desp = _cur_frame->GetDescriptor();
-                last_imu_rotate_data = Eigen::Matrix3f::Identity();
-                last_imu_transit_data = Eigen::Vector3f::Zero();
-                _init_rdy = true;
                 std::cout << "Add a Key Frame, Now Num: " << _map->GetKeyFrameNum() << std::endl;
+
+                Eigen::Matrix3f imu_rotate_measure;
+                Eigen::Vector3f imu_transit_measure;
+                _imu->GetIMURotateData(imu_rotate_measure);
+                _imu->GetIMUTransitData(imu_transit_measure);
+
+                _init_rdy = true;
             }
             else
             {
+                cv::Mat cur_frame_desp;
+                cv::Mat last_frame_desp;
                 cur_frame_desp = _cur_frame->GetDescriptor();
-                std::cout << "Found " << cur_frame_desp.rows << " Key Points" << std::endl;
+                last_frame_desp = _last_frame->GetDescriptor();
+                _feature_match->MatchByDBoW(cur_frame_desp, last_frame_desp, _bow_match);
 
-                _feature_match->MatchByDBoW(cur_frame_desp, last_key_frame_desp, _bow_match);
+                std::cout << "Found " << cur_frame_desp.rows << " Key Points" << std::endl;
                 std::cout << "Found " << _bow_match.size() << " Matches" << std::endl;
 
-                _imu->GetIMURotateData(imu_rotate_data);
-                _imu->GetIMUTransitData(imu_transit_data);
+                Eigen::Matrix3f imu_rotate_measure;
+                Eigen::Vector3f imu_transit_measure;
+                _imu->GetIMURotateData(imu_rotate_measure);
+                _imu->GetIMUTransitData(imu_transit_measure);
                 
-                imu_trans_measure = imu_rotate_data * last_imu_rotate_data.inverse();
-                imu_trans_t_measure = imu_transit_data - last_imu_transit_data;
-
-                transform = OptimizeTransform(last_key_frame_pose, imu_trans_measure, imu_trans_t_measure);
+                transform = OptimizeTransform(imu_rotate_measure, imu_transit_measure);
                 std::cout << transform << std::endl;
+
+                _cur_frame->SetAbsPose(transform * _last_frame->GetAbsPose());
 
                 _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
                 if(_cur_frame->IsKeyFrame())
                 {
-                    last_key_frame_pose = transform * last_key_frame_pose;
-                    _cur_frame->SetAbsPose(last_key_frame_pose);
                     _map->Set2KeyFrameVec(_cur_frame);
                     _map->TrackMapPoints(_final_good_match);
-                    last_key_frame_desp = cur_frame_desp;
-                    last_imu_rotate_data = imu_rotate_data;
-                    last_imu_transit_data = imu_transit_data;
                     _frames_between = 0;
                     std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;
                     std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;
@@ -204,9 +201,11 @@ void Odometry::OdometryLoop()
                 _final_good_match.clear();
             }
 
+            _last_frame = _cur_frame;
+
             auto t2 = std::chrono::steady_clock::now();
             auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-            std::cout << "Odometry Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
+            // std::cout << "Odometry Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
         }
     }
 }

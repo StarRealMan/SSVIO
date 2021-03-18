@@ -32,6 +32,8 @@ IMU::IMU(Config::Ptr config)
     }
 
     _IMU2Cam << 1, 0, 0, 0, 0, -1, 0, 1, 0;
+    _IMU_vel = Eigen::Vector3f::Zero();
+    _IMU_transit = Eigen::Vector3f::Zero();
 
     _IMU_running.store(true);
     _IMU_thread = std::thread(std::bind(&IMU::IMULoop,this));
@@ -93,14 +95,18 @@ void IMU::ReceivePack()
 
 void IMU::GetIMURotateData(Eigen::Matrix3f &IMU_rotate)
 {
+    static Eigen::Matrix3f last_IMU_rotate = Eigen::Matrix3f::Identity();
     std::lock_guard<std::mutex> lck(_IMU_rotate_data_mtx);
-    IMU_rotate = _IMU_rotate;
+    IMU_rotate = _IMU_rotate * last_IMU_rotate.inverse();
+    last_IMU_rotate = _IMU_rotate;
 }
 
-void IMU::GetIMUTransitData(Eigen::Vector3f &IMU_acc)
+void IMU::GetIMUTransitData(Eigen::Vector3f &IMU_transit)
 {
+    static Eigen::Vector3f last_IMU_transit = Eigen::Vector3f::Zero();
     std::lock_guard<std::mutex> lck(_IMU_transit_data_mtx);
-    IMU_acc = _IMU_transit;
+    IMU_transit = _IMU_transit - last_IMU_transit;
+    last_IMU_transit = _IMU_transit;
 }
 
 void IMU::AccIntegrate()
@@ -116,7 +122,7 @@ void IMU::AccIntegrate()
 
     _IMU_real_acc = _IMU_acc - _IMU_rotate * Gravity_vec;
 
-    if(delta_time > 0.005)
+    if(delta_time > 0.001)
     {
         _IMU_vel += ((_IMU_real_acc+last_acc)*_Gravity/2000.0)*delta_time;
         _IMU_transit += (_IMU_vel+last_vel)*delta_time/2.0;
@@ -139,7 +145,7 @@ void IMU::IMULoop()
 
         auto t2 = std::chrono::steady_clock::now();
         auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-        std::cout << "IMU Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
+        // std::cout << "IMU Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
     }
 }
 

@@ -24,7 +24,7 @@ public:
     void receive(unsigned char* buff, size_t& length);
     void ReceivePack();
     void GetIMURotateData(Eigen::Matrix3f &IMU_rotate);
-    void GetIMUTransitData(Eigen::Vector3f &IMU_acc);
+    void GetIMUTransitData(Eigen::Vector3f &IMU_transit);
     void AccIntegrate();
 
     void IMULoop();

@@ -89,20 +89,20 @@ class EdgeICPPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Vector3f, VertexPose
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeICPPoseOnly(const Eigen::Vector3f &key_frame_point):BaseUnaryEdge(), _key_frame_point(key_frame_point){}
+    EdgeICPPoseOnly(const Eigen::Vector3f &key_frame_point):BaseUnaryEdge(), _ref_frame_point(key_frame_point){}
 
     virtual void computeError() override
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T = v->estimate();
-        _error = _measurement.cast<double>() - T.cast<double>() * _key_frame_point.cast<double>();
+        _error = _measurement.cast<double>() - T.cast<double>() * _ref_frame_point.cast<double>();
     }
 
     virtual void linearizeOplus() override
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T = v->estimate();
-        Eigen::Vector3f pos_cam = T * _key_frame_point;
+        Eigen::Vector3f pos_cam = T * _ref_frame_point;
         _jacobianOplusXi.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
         _jacobianOplusXi.block<3,3>(0,3) =  Sophus::SO3d::hat(pos_cam.cast<double>());
     }
@@ -118,7 +118,7 @@ public:
     }
 
 private:
-    Eigen::Vector3f _key_frame_point;
+    Eigen::Vector3f _ref_frame_point;
 };
 
 class EdgeIMUPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Matrix3f, VertexPose>
@@ -126,14 +126,14 @@ class EdgeIMUPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Matrix3f, VertexPose
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeIMUPoseOnly(const Eigen::Matrix4f &key_frame_pose):BaseUnaryEdge(), _key_frame_pose(key_frame_pose){}
+    EdgeIMUPoseOnly(const Eigen::Matrix4f &key_frame_pose):BaseUnaryEdge(), _ref_frame_pose(key_frame_pose){}
 
     virtual void computeError() override
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T_curr = v->estimate();
         SO3 T_m(_measurement);
-        SO3 T_key(_key_frame_pose.block<3,3>(0,0));
+        SO3 T_key(_ref_frame_pose.block<3,3>(0,0));
         _error = ((T_m.cast<double>() * T_key.cast<double>()) * T_curr.so3().cast<double>().inverse()).log();
     }
 
@@ -153,7 +153,7 @@ public:
     }
 
 private:
-    Eigen::Matrix4f _key_frame_pose;
+    Eigen::Matrix4f _ref_frame_pose;
 };
 
 class EdgeICPPosePoint : public g2o::BaseBinaryEdge<3, Eigen::Vector3f, VertexPose, VertexPoint>
@@ -217,7 +217,7 @@ public:
     void DoOptimization(int optim_round);
     void AddPose(Eigen::Matrix4f pose_val);
     void AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id);
-    void AddIMUMeasure(Eigen::Matrix4f key_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id);
+    void AddIMUMeasure(Eigen::Matrix4f ref_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id);
     Eigen::Matrix4f GetPose();
 
 private:
