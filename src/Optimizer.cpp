@@ -91,25 +91,23 @@ void LocalOptimizer::DoOptimization(int optim_round)
 }
 
 void LocalOptimizer::AddPose(Eigen::Matrix4f pose_val, int pose_id)
-{   
+{
     VertexPose *vertex_pose = new VertexPose();
-    _optimze_pose_val_vec[pose_id] = SE3(pose_val);
-    vertex_pose->setEstimate(_optimze_pose_val_vec[pose_id]);
+    _optimze_pose_val_map[pose_id] = SE3(pose_val);
+    vertex_pose->setEstimate(_optimze_pose_val_map[pose_id]);
     vertex_pose->setId(pose_id);
     _optimizer.addVertex(vertex_pose);
-    _vertex_pose_vec[pose_id] = vertex_pose;
+    _vertex_pose_map[pose_id] = vertex_pose;
 }
 
-void LocalOptimizer::AddPoint(cv::Point3f cv_map_point, int point_id)
+void LocalOptimizer::AddPoint(Eigen::Vector3f map_point, int point_id)
 {
     VertexPoint *vertex_point = new VertexPoint();
-    Eigen::Vector3f map_point;
-    map_point << cv_map_point.x, cv_map_point.y, cv_map_point.z;
-    _optimze_point_val_vec[point_id] = map_point;
-    vertex_point->setEstimate(_optimze_point_val_vec[point_id]);
+    _optimze_point_val_map[point_id] = map_point;
+    vertex_point->setEstimate(_optimze_point_val_map[point_id]);
     vertex_point->setId(point_id);
     _optimizer.addVertex(vertex_point);
-    _vertex_point_vec[point_id] = vertex_point;
+    _vertex_point_map[point_id] = vertex_point;
 }
 
 void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id, int pose_id, int point_id)
@@ -120,8 +118,8 @@ void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id, i
 
     EdgeICPPosePoint *edge = new EdgeICPPosePoint();
     edge->setId(measure_id);
-    edge->setVertex(0, _vertex_pose_vec[pose_id]);
-    edge->setVertex(1, _vertex_point_vec[point_id]);
+    edge->setVertex(0, _vertex_pose_map[pose_id]);
+    edge->setVertex(1, _vertex_point_map[point_id]);
     edge->setMeasurement(measured_point);
     edge->setInformation(Eigen::Matrix3d::Identity());
     edge->setRobustKernel(new g2o::RobustKernelHuber);

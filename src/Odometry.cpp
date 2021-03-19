@@ -64,7 +64,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix3f imu_trans_measure, E
         }
     }
 
-    if(last_frame_3d_point_set.size() > 12)
+    if(last_frame_3d_point_set.size() > 30)
     {
         cv::Mat pnp_inliers;
         cv::solvePnPRansac(last_frame_3d_point_set,cur_frame_2d_point_set, _InnerK, cv::Mat(),
@@ -110,7 +110,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix3f imu_trans_measure, E
 
     optimizer->AddIMUMeasure(_last_frame->GetAbsPose(), imu_trans_measure, edge_num);
     
-    if(_final_good_match.size() > 10)
+    if(_final_good_match.size() > 20)
     {
         std::cout << "Start Optimize" << std::endl;
         optimizer->DoOptimization(20);
@@ -132,12 +132,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix3f imu_trans_measure, E
 void Odometry::OdometryLoop()
 {
     Eigen::Matrix4f transform;
-    Eigen::Matrix4f last_key_frame_pose;
-    Eigen::Matrix3f last_imu_rotate_data;
-    Eigen::Vector3f last_imu_transit_data;
-    Eigen::Matrix3f imu_trans_measure;
-    Eigen::Vector3f imu_trans_t_measure;
-
+    std::vector<cv::DMatch> last_match_vec;    
 
     while(_odometry_running.load())
     {
@@ -152,6 +147,7 @@ void Odometry::OdometryLoop()
 
             if(!_init_rdy)
             {
+                _map->ManageMapPoints(_cur_frame, last_match_vec);
                 _map->Set2KeyFrameVec(_cur_frame);
                 _cur_frame->SetKeyFrame();
                 _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
@@ -184,15 +180,26 @@ void Odometry::OdometryLoop()
                 std::cout << transform << std::endl;
 
                 _cur_frame->SetAbsPose(transform * _last_frame->GetAbsPose());
+                
+                if(_last_frame->IsKeyFrame())
+                {
+                    last_match_vec.clear();
+                    last_match_vec = _bow_match;
+                }
+                else
+                {
+                    _map->TrackMapPoints(last_match_vec, _bow_match);
+                }
 
                 _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
                 if(_cur_frame->IsKeyFrame())
                 {
+                    _map->ManageMapPoints(_cur_frame, last_match_vec);
                     _map->Set2KeyFrameVec(_cur_frame);
-                    _map->TrackMapPoints(_final_good_match);
-                    _frames_between = 0;
                     std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;
                     std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;
+
+                    _frames_between = 0;
                 }
                 else
                 {
@@ -205,7 +212,7 @@ void Odometry::OdometryLoop()
 
             auto t2 = std::chrono::steady_clock::now();
             auto time_used = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-            // std::cout << "Odometry Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
+            std::cout << "Odometry Thread " << time_used.count()*1000 << " ms per frame " << std::endl;
         }
     }
 }

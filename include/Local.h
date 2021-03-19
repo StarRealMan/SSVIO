@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "MapPoint.h"
 #include "Frame.h"
+#include "Optimizer.h"
 
 #include <iostream>
 #include <vector>

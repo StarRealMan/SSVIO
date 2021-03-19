@@ -22,5 +22,5 @@ double Frame::_DepthScale = config->GetParam<float>("DepthScale")/65535.0;
 float OdomOptimizer::_IMUGain = config->GetParam<float>("IMUGain");
 float Frame::_InvInnerFx = 1/Frame::_InnerFx;
 float Frame::_InvInnerFy = 1/Frame::_InnerFy;
-int Frame::_key_frame_point_num = 0;
+int Frame::_key_frame_num = 0;
 int MapPoint::_map_point_num = 0;

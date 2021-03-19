@@ -33,8 +33,9 @@ public:
     Eigen::Matrix4f GetAbsPose();
     cv::Point3f Get3DPoint(int index);
     int GetID();
-    void AddObserveIdx(int img_point_idx, int map_point_id);
-    void GetObserveIdx(std::vector<std::pair<int, int>> &idx_pair_vec);
+    void SetObserve(int map_point_id, int point_id);
+    std::vector<std::pair<int, int>> GetObserve();
+    int GetMapPointID(int point_id);
 
     static float _InnerCx;
     static float _InnerCy;
@@ -46,7 +47,7 @@ public:
     static int _MaxGoodPointThres;
     static int _MaxFramesBetween;
     static int _MinFramesBetween;
-    static int _key_frame_point_num;
+    static int _key_frame_num;
 
 private:
     cv::Mat _rgb_img;
@@ -55,9 +56,9 @@ private:
     bool _is_key_frame;
     int _key_frame_id;
     Eigen::Matrix4f _rel_abs_pos;
-    std::vector<std::pair<int, int>> _idx_pair_vec;
 
     std::vector<cv::KeyPoint> _key_point_vec;
+    std::vector<std::pair<int, int>> _observed_mappid_pid_vec;
     std::mutex _is_key_frame_mtx;
     std::mutex _d_image_mtx;
     std::mutex _rgb_image_mtx;
@@ -65,6 +66,7 @@ private:
     std::mutex _descriptor_mtx;
     std::mutex _pose_mtx;
     std::mutex _id_mtx;
+    std::mutex _ob_mtx;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "MapPoint.h"
 
-MapPoint::MapPoint(cv::Point3f map_point_pos)
+MapPoint::MapPoint(Eigen::Vector3f map_point_pos)
 {
     _map_point_id = _map_point_num;
     _map_point_num++;
@@ -12,9 +12,19 @@ MapPoint::~MapPoint()
 
 }
 
-void MapPoint::SetObserve(int key_frame_id)
+void MapPoint::SetObserve(int key_frame_id, int point_id)
 {
-    _observed_key_frame_id.push_back(key_frame_id);
+    std::lock_guard<std::mutex> lck(_ob_mtx);
+    std::pair<int, int> ob_pair;
+    ob_pair.first = key_frame_id;
+    ob_pair.second = point_id;
+    _observed_fid_pid_vec.push_back(ob_pair);
+}
+
+std::vector<std::pair<int, int>> MapPoint::GetObserve()
+{
+    std::lock_guard<std::mutex> lck(_ob_mtx);
+    return _observed_fid_pid_vec;
 }
 
 int MapPoint::GetID()
@@ -23,3 +33,8 @@ int MapPoint::GetID()
     return _map_point_id;
 }
     
+Eigen::Vector3f MapPoint::Get3DPoint()
+{
+    std::lock_guard<std::mutex> lck(_3d_point_mtx);
+    return _map_point_pos;
+}

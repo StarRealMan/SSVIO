@@ -17,15 +17,19 @@ public:
     ~Map();
 
     void Set2KeyFrameVec(Frame::Ptr key_frame);
-    Frame::Ptr GetKeyFrames(int key_frame_num);
+    Frame::Ptr GetKeyFrames(int key_frame_id);
     int GetKeyFrameNum();
+    MapPoint::Ptr GetMapPoint(int map_point_id);
     int GetMapPointNum();
-    void TrackMapPoints(std::vector<cv::DMatch> &match_vec);
+    void TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv::DMatch> &this_match_vec);
+    void ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_match_vec);
+    int InMatchVec(int i, std::vector<cv::DMatch> last_match_vec);
 
 private:
     std::vector<Frame::Ptr> _key_frame_vec;
     std::vector<MapPoint::Ptr> _map_point_vec;
     std::mutex _key_frame_mtx;
+    std::mutex _map_point_mtx;
 };
 
 

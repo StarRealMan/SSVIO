@@ -46,8 +46,8 @@ void Frame::SetKeyFrame()
 {
     std::lock_guard<std::mutex> lck(_is_key_frame_mtx);
     _is_key_frame = true;
-    _key_frame_id = _key_frame_point_num;
-    _key_frame_point_num++;
+    _key_frame_id = _key_frame_num;
+    _key_frame_num++;
 }
 
 cv::Mat Frame::GetDImage()
@@ -116,15 +116,28 @@ int Frame::GetID()
     }
 }
 
-void Frame::AddObserveIdx(int img_point_idx, int map_point_id)
+void Frame::SetObserve(int map_point_id, int point_id)
 {
-    std::pair<int, int> idx_pair;
-    idx_pair.first = img_point_idx;
-    idx_pair.second = map_point_id;
-    _idx_pair_vec.push_back(idx_pair);
+    std::lock_guard<std::mutex> lck(_ob_mtx);
+    std::pair<int, int> pair;
+    pair.first = map_point_id;
+    pair.second = point_id;
+    _observed_mappid_pid_vec.push_back(pair);
 }
 
-void Frame::GetObserveIdx(std::vector<std::pair<int, int>> &idx_pair_vec)
+std::vector<std::pair<int, int>> Frame::GetObserve()
 {
-    idx_pair_vec = _idx_pair_vec;
+    std::lock_guard<std::mutex> lck(_ob_mtx);
+    return _observed_mappid_pid_vec;
+}
+
+int Frame::GetMapPointID(int point_id)
+{
+    for(int i = 0; i < _observed_mappid_pid_vec.size(); i++)
+    {
+        if(point_id == _observed_mappid_pid_vec[i].second)
+        {
+            return _observed_mappid_pid_vec[i].first;
+        }
+    }
 }
