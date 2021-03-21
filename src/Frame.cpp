@@ -77,13 +77,23 @@ cv::Mat Frame::GetDescriptor()
 void Frame::SetAbsPose(Eigen::Matrix4f pose)
 {
     std::lock_guard<std::mutex> lck(_pose_mtx);
-    _rel_abs_pos = pose;
+    _abs_pos = pose;
+    std::cout << "in adding pose " << _abs_pos.block<3,1>(0,3) << std::endl;
+    if(_abs_pos.block<3,1>(0,3).z() > 0.1 || _abs_pos.block<3,1>(0,3).z() < -0.1)
+    {
+        exit(0);
+    }
 }
 
 Eigen::Matrix4f Frame::GetAbsPose()
 {
     std::lock_guard<std::mutex> lck(_pose_mtx);
-    return _rel_abs_pos;
+    std::cout << "in getting pose " << _abs_pos.block<3,1>(0,3) << std::endl;
+    if(_abs_pos.block<3,1>(0,3).z() > 0.1 || _abs_pos.block<3,1>(0,3).z() < -0.1)
+    {
+        exit(0);
+    }
+    return _abs_pos;
 }
 
 cv::Point3f Frame::Get3DPoint(int index)

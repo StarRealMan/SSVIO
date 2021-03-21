@@ -55,7 +55,7 @@ private:
     cv::Mat _descriptor;
     bool _is_key_frame;
     int _key_frame_id;
-    Eigen::Matrix4f _rel_abs_pos;
+    Eigen::Matrix4f _abs_pos;
 
     std::vector<cv::KeyPoint> _key_point_vec;
     std::vector<std::pair<int, int>> _observed_mappid_pid_vec;

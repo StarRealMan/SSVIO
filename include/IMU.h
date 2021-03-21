@@ -16,8 +16,8 @@
 class IMU
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     typedef std::shared_ptr<IMU> Ptr;
-
     IMU(Config::Ptr config);
     ~IMU();
     void send(unsigned char* ch, size_t length);
