@@ -99,6 +99,7 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 * Poor match points need to be kicked while optimizing dynamicaly
 * Use solve pnp RANSAC to filter outliers
 * Sometimes SO3 report matrix not orthogonal error
+* Local g2o optimization error
 
 ## Author
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)

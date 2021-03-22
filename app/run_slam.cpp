@@ -29,5 +29,4 @@ int main(int argc, char** argv)
 	std::cout << "Camera closed!" << std::endl;
 
     return 0;
-
 }

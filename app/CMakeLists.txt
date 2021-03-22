@@ -13,11 +13,19 @@ file(MAKE_DIRECTORY "../savings/depth")
 file(MAKE_DIRECTORY "../savings/pointcloud")
 
 
-add_executable(run_imu
-               run_imu.cpp)
+# add_executable(run_imu
+#                run_imu.cpp)
 
-target_link_libraries(run_imu
-                      xtion_driver
-                      libSSVIO
-                      ${THIRD_PARTY_LIBS})
+# target_link_libraries(run_imu
+#                       xtion_driver
+#                       libSSVIO
+#                       ${THIRD_PARTY_LIBS})
 
+
+# add_executable(run_viewer
+#                run_viewer.cpp)
+
+# target_link_libraries(run_viewer
+#                       xtion_driver
+#                       libSSVIO
+#                       ${THIRD_PARTY_LIBS})
