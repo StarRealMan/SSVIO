@@ -18,6 +18,7 @@ public:
 
     void Set2KeyFrameVec(Frame::Ptr key_frame);
     Frame::Ptr GetKeyFrames(int key_frame_id);
+    std::vector<Frame::Ptr> GetKeyFramesVec();
     int GetKeyFrameNum();
     MapPoint::Ptr GetMapPoint(int map_point_id);
     int GetMapPointNum();

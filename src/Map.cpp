@@ -30,6 +30,12 @@ Frame::Ptr Map::GetKeyFrames(int key_frame_id)
     }
 }
 
+std::vector<Frame::Ptr> Map::GetKeyFramesVec()
+{
+    std::lock_guard<std::mutex> lck(_key_frame_mtx);
+    return _key_frame_vec;
+}
+
 int Map::GetKeyFrameNum()
 {
     return _key_frame_vec.size();
@@ -73,6 +79,7 @@ void Map::TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv
 
 void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_match_vec)
 {
+    Eigen::Matrix4f world_trans = key_frame->GetAbsPose().inverse();
     for(int i = 0; i < key_frame->GetKeyPoints().size(); i++)
     {
         int match_num = InMatchVec(i, last_match_vec);
@@ -80,7 +87,6 @@ void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_mat
         {
             cv::Point3f cv_point_pose = key_frame->Get3DPoint(i);
             Eigen::Vector3f eigen_point_pose(cv_point_pose.x, cv_point_pose.y, cv_point_pose.z);
-            Eigen::Matrix4f world_trans = key_frame->GetAbsPose().inverse();
             MapPoint::Ptr map_point = std::make_shared<MapPoint>(world_trans.block<3,3>(0,0)*eigen_point_pose+
                                                                  world_trans.block<3,1>(0,3));
             map_point->SetObserve(key_frame->GetID(), i);

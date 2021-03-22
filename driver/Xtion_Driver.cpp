@@ -144,9 +144,8 @@ pcl::PointXYZRGB XtionCamera::GetRGB3DPoint(int pos_x, int pos_y, const Eigen::M
     pcl::PointXYZRGB rgb3dpoint;
     // 深度图尺度单位为深度传感器LSB
 
-    ushort depth = _d_image.at<ushort>(pos_y,pos_x)*_DepthScale;
+    float depth = _d_image.at<ushort>(pos_y,pos_x)*_DepthScale;
     // 转换尺度单位为m
-
     
     temp << (pos_x - _InnerCx)*depth*_InvInnerFx,
             (pos_y - _InnerCy)*depth*_InvInnerFy,
