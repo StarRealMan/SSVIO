@@ -27,7 +27,7 @@ Threshold         : 50
 NNRatio           : 0.6
 
 #KeyFrame
-MaxGoodPointThres : 100
+MaxMatchPointThres: 100
 MaxFramesBetween  : 30
 MinFramesBetween  : 8
 
@@ -41,4 +41,4 @@ MaxBufferLen      : 100
 DataLen           : 32
 
 #Optimizer
-IMUGain           : 10.0
+IMUGain           : 100.0

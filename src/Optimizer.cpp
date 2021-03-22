@@ -14,7 +14,6 @@ OdomOptimizer::~OdomOptimizer()
 
 }
 
-
 void OdomOptimizer::DoOptimization(int optim_round)
 {
     // do edge outlier check

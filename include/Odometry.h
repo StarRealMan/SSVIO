@@ -32,6 +32,8 @@ public:
     void OdometryStop();
 
     Frame::Ptr GetCurFrame();
+    void SetLocalStatus(bool local_status);
+
     Eigen::Matrix4f OptimizeTransform(Eigen::Matrix3f imu_rotate_data, Eigen::Vector3f imu_trans_t_measure);
 
 private:
@@ -47,6 +49,7 @@ private:
 
     int _frames_between;
     bool _init_rdy;
+    bool _local_busy;
     int _FeatureNum;
     float _ScaleFactor;
     int _LevelNum;
@@ -57,6 +60,7 @@ private:
     std::atomic<bool> _odometry_running;
     std::thread _odometry_thread;
     std::mutex _cur_frame_mtx;
+    std::mutex _local_status_mtx;
 
 };
 

@@ -98,7 +98,6 @@ Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 * Check Key Frame Method
 * Poor match points need to be kicked while optimizing dynamicaly
 * Use solve pnp RANSAC to filter outliers
-* Sometimes SO3 report matrix not orthogonal error
 * Local g2o optimization error
 
 ## Author

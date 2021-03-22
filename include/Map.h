@@ -1,6 +1,17 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
+#include <pcl/console/parse.h>
+#include <pcl/common/transforms.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <Eigen/Core>
+#include <Eigen/Geometry>
+
+
+#include <boost/make_shared.hpp>
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -20,16 +31,18 @@ public:
     void Set2KeyFrameVec(Frame::Ptr key_frame);
     void Set2TrajVec(Eigen::Vector3f traj);
     Frame::Ptr GetKeyFrames(int key_frame_id);
-    std::vector<Frame::Ptr> GetKeyFramesVec();
-    std::vector<Eigen::Vector3f> GetTrajVec();
+    std::vector<Frame::Ptr>& GetKeyFramesVec();
+    std::vector<Eigen::Vector3f>& GetTrajVec();
     int GetKeyFrameNum();
     MapPoint::Ptr GetMapPoint(int map_point_id);
     int GetMapPointNum();
     void TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv::DMatch> &this_match_vec);
-    void ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_match_vec);
-    int InMatchVec(int i, std::vector<cv::DMatch> last_match_vec);
+    void ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch>& last_match_vec);
+    int InMatchVec(int i, std::vector<cv::DMatch>& last_match_vec);
+    void MapPointCloudFusion();
 
 private:
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _final_cloud;
     std::vector<Frame::Ptr> _key_frame_vec;
     std::vector<Eigen::Vector3f> _traj_vec;
     std::vector<MapPoint::Ptr> _map_point_vec;

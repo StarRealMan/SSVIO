@@ -2,7 +2,7 @@
 
 Map::Map()
 {
-
+    _final_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>(); 
 }
 
 Map::~Map()
@@ -16,7 +16,7 @@ void Map::Set2TrajVec(Eigen::Vector3f traj)
     _traj_vec.push_back(traj);
 }
 
-std::vector<Eigen::Vector3f> Map::GetTrajVec()
+std::vector<Eigen::Vector3f>& Map::GetTrajVec()
 {
     std::lock_guard<std::mutex> lck(_traj_vec_mtx);
     return _traj_vec;
@@ -43,7 +43,7 @@ Frame::Ptr Map::GetKeyFrames(int key_frame_id)
     }
 }
 
-std::vector<Frame::Ptr> Map::GetKeyFramesVec()
+std::vector<Frame::Ptr>& Map::GetKeyFramesVec()
 {
     std::lock_guard<std::mutex> lck(_key_frame_vec_mtx);
     return _key_frame_vec;
@@ -91,7 +91,7 @@ void Map::TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv
     last_match_vec = temp_last_match_vec;
 }
 
-void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_match_vec)
+void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch>& last_match_vec)
 {
     Eigen::Matrix4f world_trans = key_frame->GetAbsPose().inverse();
     for(int i = 0; i < key_frame->GetKeyPoints().size(); i++)
@@ -117,7 +117,7 @@ void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch> last_mat
     }
 }
 
-int Map::InMatchVec(int i, std::vector<cv::DMatch> last_match_vec)
+int Map::InMatchVec(int i, std::vector<cv::DMatch>& last_match_vec)
 {
     for(int j = 0; j < last_match_vec.size(); j++)
     {
@@ -128,4 +128,19 @@ int Map::InMatchVec(int i, std::vector<cv::DMatch> last_match_vec)
     }
 
     return -1;
+}
+
+void Map::MapPointCloudFusion()
+{
+    
+    for(int i = 0; i < _key_frame_vec.size(); i++)
+    {
+        Frame::Ptr this_frame = _key_frame_vec[i];
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr this_cloud = this_frame->GetRGBCloud();
+        Eigen::Matrix4f this_trans = this_frame->GetAbsPose();
+
+        pcl::transformPointCloud(*this_cloud, *this_cloud, this_trans);
+
+        *_final_cloud += *this_cloud;
+    }
 }

@@ -13,6 +13,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+#include <boost/make_shared.hpp>
 
 #include "Config.h"
 

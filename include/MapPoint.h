@@ -18,7 +18,7 @@ public:
     ~MapPoint();
 
     void SetObserve(int key_frame_id, int point_id);
-    std::vector<std::pair<int, int>> GetObserve();
+    std::vector<std::pair<int, int>>& GetObserve();
     int GetID();
     Eigen::Vector3f Get3DPoint();
     static int _map_point_num;

@@ -21,7 +21,7 @@ void MapPoint::SetObserve(int key_frame_id, int point_id)
     _observed_fid_pid_vec.push_back(ob_pair);
 }
 
-std::vector<std::pair<int, int>> MapPoint::GetObserve()
+std::vector<std::pair<int, int>>& MapPoint::GetObserve()
 {
     std::lock_guard<std::mutex> lck(_ob_mtx);
     return _observed_fid_pid_vec;

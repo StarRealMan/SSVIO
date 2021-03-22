@@ -15,8 +15,8 @@ Viewer::~Viewer()
 
 void Viewer::DrawTrajnTrans()
 {
-    std::vector<Frame::Ptr> key_frames_vec = _viewer_map->GetKeyFramesVec();
-    std::vector<Eigen::Vector3f> pose_traj_vec = _viewer_map->GetTrajVec();
+    std::vector<Frame::Ptr>& key_frames_vec = _viewer_map->GetKeyFramesVec();
+    std::vector<Eigen::Vector3f>& pose_traj_vec = _viewer_map->GetTrajVec();
 
     for(int i = 0; i < key_frames_vec.size(); i++)
     {

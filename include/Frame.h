@@ -4,6 +4,9 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
 
 #include <iostream>
 #include <vector>
@@ -21,21 +24,24 @@ public:
     Frame(cv::Mat rgb_img, cv::Mat d_img, ORBextractor::Ptr _orb_extractor);
     ~Frame();
 
-    void CheckKeyFrame(Eigen::Matrix4f transform, int good_point_num, int frames_between);
+    
+    void CheckKeyFrame(bool local_busy, int match_point_num, int frames_between);
     bool IsKeyFrame();
     void SetKeyFrame();
 
     cv::Mat GetDImage();
     cv::Mat GetRGBImage();
-    std::vector<cv::KeyPoint> GetKeyPoints();
+    std::vector<cv::KeyPoint>& GetKeyPoints();
     cv::Mat GetDescriptor();
     void SetAbsPose(Eigen::Matrix4f pose);
     Eigen::Matrix4f GetAbsPose();
     cv::Point3f Get3DPoint(int index);
     int GetID();
     void SetObserve(int map_point_id, int point_id);
-    std::vector<std::pair<int, int>> GetObserve();
+    std::vector<std::pair<int, int>>& GetObserve();
     int GetMapPointID(int point_id);
+    void SetRGBCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr GetRGBCloud();
 
     static float _InnerCx;
     static float _InnerCy;
@@ -44,7 +50,7 @@ public:
     static float _InvInnerFx;
     static float  _InvInnerFy;
     static double _DepthScale;
-    static int _MaxGoodPointThres;
+    static int _MaxMatchPointThres;
     static int _MaxFramesBetween;
     static int _MinFramesBetween;
     static int _key_frame_num;
@@ -55,7 +61,8 @@ private:
     cv::Mat _descriptor;
     bool _is_key_frame;
     int _key_frame_id;
-    Eigen::Matrix4f _rel_abs_pos;
+    Eigen::Matrix4f _abs_pos;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgb_cloud;
 
     std::vector<cv::KeyPoint> _key_point_vec;
     std::vector<std::pair<int, int>> _observed_mappid_pid_vec;
@@ -67,6 +74,7 @@ private:
     std::mutex _pose_mtx;
     std::mutex _id_mtx;
     std::mutex _ob_mtx;
+    std::mutex _rgb_cloud_mtx;
 };
 
 #endif

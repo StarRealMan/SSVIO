@@ -13,25 +13,25 @@ Frame::~Frame()
     
 }
 
-void Frame::CheckKeyFrame(Eigen::Matrix4f transform, int good_point_num, int frames_between)
+void Frame::CheckKeyFrame(bool local_busy, int match_point_num, int frames_between)
 {
-    if(frames_between > _MaxFramesBetween)
-    {
-        SetKeyFrame();
-    }
-    else if(frames_between < _MinFramesBetween)
+    if(local_busy)
     {
         return;
     }
     else
     {
-        if(good_point_num > _MaxGoodPointThres)
+        if(frames_between > _MaxFramesBetween)
         {
-            return;
+            SetKeyFrame();
+        }
+        else if(frames_between > _MinFramesBetween &&  match_point_num < _MaxMatchPointThres)
+        {
+            SetKeyFrame();
         }
         else
         {
-            SetKeyFrame();
+            return;
         }
     }
 }
@@ -62,7 +62,7 @@ cv::Mat Frame::GetRGBImage()
     return _rgb_img;
 }
 
-std::vector<cv::KeyPoint> Frame::GetKeyPoints()
+std::vector<cv::KeyPoint>& Frame::GetKeyPoints()
 {
     std::lock_guard<std::mutex> lck(_key_points_mtx);
     return _key_point_vec;
@@ -77,13 +77,13 @@ cv::Mat Frame::GetDescriptor()
 void Frame::SetAbsPose(Eigen::Matrix4f pose)
 {
     std::lock_guard<std::mutex> lck(_pose_mtx);
-    _rel_abs_pos = pose;
+    _abs_pos = pose;
 }
 
 Eigen::Matrix4f Frame::GetAbsPose()
 {
     std::lock_guard<std::mutex> lck(_pose_mtx);
-    return _rel_abs_pos;
+    return _abs_pos;
 }
 
 cv::Point3f Frame::Get3DPoint(int index)
@@ -125,7 +125,7 @@ void Frame::SetObserve(int map_point_id, int point_id)
     _observed_mappid_pid_vec.push_back(pair);
 }
 
-std::vector<std::pair<int, int>> Frame::GetObserve()
+std::vector<std::pair<int, int>>& Frame::GetObserve()
 {
     std::lock_guard<std::mutex> lck(_ob_mtx);
     return _observed_mappid_pid_vec;
@@ -140,4 +140,16 @@ int Frame::GetMapPointID(int point_id)
             return _observed_mappid_pid_vec[i].first;
         }
     }
+}
+
+void Frame::SetRGBCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud)
+{
+    std::lock_guard<std::mutex> lck(_rgb_cloud_mtx);
+    _rgb_cloud = rgb_cloud;
+}
+
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr Frame::GetRGBCloud()
+{
+    std::lock_guard<std::mutex> lck(_rgb_cloud_mtx);
+    return _rgb_cloud;
 }

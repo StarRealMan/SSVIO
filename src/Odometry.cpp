@@ -15,6 +15,7 @@ Odometry::Odometry(XtionCamera::Ptr camera, IMU::Ptr imu, Map::Ptr map, Config::
     _InnerK = (cv::Mat_<float>(3,3) << Frame::_InnerFx, 0, Frame::_InnerCx, 0, Frame::_InnerFy, Frame::_InnerCy, 0, 0, 1);
     _frames_between = 0;
     _init_rdy = false;
+    _local_busy = false;
 
     _odometry_running.store(true);
     _odometry_thread = std::thread(std::bind(&Odometry::OdometryLoop,this));
@@ -25,6 +26,11 @@ Odometry::~Odometry()
     
 }
 
+void Odometry::SetLocalStatus(bool local_busy)
+{
+    std::lock_guard<std::mutex> lck(_local_status_mtx);
+    _local_busy = local_busy;
+}
 
 Frame::Ptr Odometry::GetCurFrame()
 {
@@ -168,9 +174,6 @@ void Odometry::OdometryLoop()
                 last_frame_desp = _last_frame->GetDescriptor();
                 _feature_match->MatchByDBoW(cur_frame_desp, last_frame_desp, _bow_match);
 
-                std::cout << "Found " << cur_frame_desp.rows << " Key Points" << std::endl;
-                std::cout << "Found " << _bow_match.size() << " Matches" << std::endl;
-
                 Eigen::Matrix3f imu_rotate_measure;
                 Eigen::Vector3f imu_transit_measure;
                 _imu->GetIMURotateData(imu_rotate_measure);
@@ -179,25 +182,30 @@ void Odometry::OdometryLoop()
                 transform = OptimizeTransform(imu_rotate_measure, imu_transit_measure);
 
                 Eigen::Matrix4f abs_pose =  transform * _last_frame->GetAbsPose();
+                Eigen::Quaternionf abs_pose_q(abs_pose.block<3,3>(0,0));
+                abs_pose.block<3,3>(0,0) = abs_pose_q.matrix();
 
                 _cur_frame->SetAbsPose(abs_pose);
                 _map->Set2TrajVec(abs_pose.block<3,1>(0,3));
 
+                std::cout << "Found " << cur_frame_desp.rows << " Key Points" << std::endl;
+                std::cout << "Found " << _final_good_match.size() << " Matches" << std::endl;
                 std::cout << abs_pose << std::endl;
                 
                 if(_last_frame->IsKeyFrame())
                 {
                     last_match_vec.clear();
-                    last_match_vec = _bow_match;
+                    last_match_vec = _final_good_match;
                 }
                 else
                 {
-                    _map->TrackMapPoints(last_match_vec, _bow_match);
+                    _map->TrackMapPoints(last_match_vec, _final_good_match);
                 }
 
-                _cur_frame->CheckKeyFrame(transform, _final_good_match.size(), _frames_between);
+                _cur_frame->CheckKeyFrame(_local_busy, last_match_vec.size(), _frames_between);
                 if(_cur_frame->IsKeyFrame())
                 {
+                    _cur_frame->SetRGBCloud(_camera->GetRGBCloud());
                     _map->ManageMapPoints(_cur_frame, last_match_vec);
                     _map->Set2KeyFrameVec(_cur_frame);
                     std::cout << "Add a Key Frame, Now Key Frame Num: " << _map->GetKeyFrameNum() << std::endl;

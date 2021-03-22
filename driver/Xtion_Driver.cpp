@@ -1,5 +1,4 @@
 #include "Xtion_Driver.h"
-#include <boost/make_shared.hpp>
 
 XtionCamera::XtionCamera(Config::Ptr config)
 {

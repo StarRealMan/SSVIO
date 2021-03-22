@@ -38,11 +38,11 @@ void Local::LocalLoop()
 
                 optimizer->AddPose(key_frame->GetAbsPose(), pose_num);
 
-                std::vector<std::pair<int, int>> ob_vec = key_frame->GetObserve();
+                std::vector<std::pair<int, int>>& ob_vec = key_frame->GetObserve();
                 for(int j = 0; j < ob_vec.size(); j++)
                 {
                     std::pair<int, int> pair = ob_vec[j];
-                    std::vector<std::pair<int, int>> point_ob = _map->GetMapPoint(pair.first)->GetObserve();
+                    std::vector<std::pair<int, int>>& point_ob = _map->GetMapPoint(pair.first)->GetObserve();
 
                     if(point_ob.size() > 1)
                     {
