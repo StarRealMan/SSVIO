@@ -177,9 +177,13 @@ void Odometry::OdometryLoop()
                 _imu->GetIMUTransitData(imu_transit_measure);
                 
                 transform = OptimizeTransform(imu_rotate_measure, imu_transit_measure);
-                std::cout << transform << std::endl;
 
-                _cur_frame->SetAbsPose(transform * _last_frame->GetAbsPose());
+                Eigen::Matrix4f abs_pose =  transform * _last_frame->GetAbsPose();
+
+                _cur_frame->SetAbsPose(abs_pose);
+                _map->Set2TrajVec(abs_pose.block<3,1>(0,3));
+
+                std::cout << abs_pose << std::endl;
                 
                 if(_last_frame->IsKeyFrame())
                 {

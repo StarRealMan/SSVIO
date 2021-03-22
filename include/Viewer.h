@@ -38,9 +38,6 @@ private:
     Odometry::Ptr _viewer_odometry;
     Map::Ptr _viewer_map;
     Frame::Ptr _cur_frame;
-
-    std::vector<Eigen::Vector3f> _pose_traj_vec;
-
 };
 
 #endif

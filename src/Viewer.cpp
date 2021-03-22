@@ -16,6 +16,8 @@ Viewer::~Viewer()
 void Viewer::DrawTrajnTrans()
 {
     std::vector<Frame::Ptr> key_frames_vec = _viewer_map->GetKeyFramesVec();
+    std::vector<Eigen::Vector3f> pose_traj_vec = _viewer_map->GetTrajVec();
+
     for(int i = 0; i < key_frames_vec.size(); i++)
     {
         Eigen::Matrix4f trans = key_frames_vec[i]->GetAbsPose();
@@ -49,10 +51,10 @@ void Viewer::DrawTrajnTrans()
     glLineWidth(2);
     glBegin(GL_LINES);
     glColor3f(0.f, 1.f, 0.f);
-    for(int  i = 0; i < _pose_traj_vec.size() - 1; i++)
+    for(int  i = 0; i < pose_traj_vec.size() - 1; i++)
     {
-        Eigen::Vector3f this_pose = _pose_traj_vec[i];
-        Eigen::Vector3f next_pose = _pose_traj_vec[i+1];
+        Eigen::Vector3f this_pose = pose_traj_vec[i];
+        Eigen::Vector3f next_pose = pose_traj_vec[i+1];
 
         glVertex3d(this_pose.x(), this_pose.y(), this_pose.z());
         glVertex3d(next_pose.x(), next_pose.y(), next_pose.z());
@@ -91,7 +93,6 @@ void Viewer::ViewerLoop()
      
         _cur_frame = _viewer_odometry->GetCurFrame();
         Eigen::Matrix4f this_pose = _cur_frame->GetAbsPose();
-        _pose_traj_vec.push_back(this_pose.block<3,1>(0,3));
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         d_cam.Activate(s_cam);

@@ -15,6 +15,7 @@
 class  Local
 {
 public:
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Local> Ptr;
     Local(Map::Ptr map, Config::Ptr config);
     ~Local();

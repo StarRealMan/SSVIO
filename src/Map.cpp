@@ -10,8 +10,21 @@ Map::~Map()
 
 }
 
+void Map::Set2TrajVec(Eigen::Vector3f traj)
+{
+    std::lock_guard<std::mutex> lck(_traj_vec_mtx);
+    _traj_vec.push_back(traj);
+}
+
+std::vector<Eigen::Vector3f> Map::GetTrajVec()
+{
+    std::lock_guard<std::mutex> lck(_traj_vec_mtx);
+    return _traj_vec;
+}
+
 void Map::Set2KeyFrameVec(Frame::Ptr key_frame)
 {
+    std::lock_guard<std::mutex> lck(_key_frame_vec_mtx);
     _key_frame_vec.push_back(key_frame);
 }
 
@@ -32,12 +45,13 @@ Frame::Ptr Map::GetKeyFrames(int key_frame_id)
 
 std::vector<Frame::Ptr> Map::GetKeyFramesVec()
 {
-    std::lock_guard<std::mutex> lck(_key_frame_mtx);
+    std::lock_guard<std::mutex> lck(_key_frame_vec_mtx);
     return _key_frame_vec;
 }
 
 int Map::GetKeyFrameNum()
 {
+    std::lock_guard<std::mutex> lck(_key_frame_vec_mtx);
     return _key_frame_vec.size();
 }
 
