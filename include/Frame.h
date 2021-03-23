@@ -49,8 +49,9 @@ public:
     static float _InnerFy;
     static float _InvInnerFx;
     static float  _InvInnerFy;
-    static double _DepthScale;
+    static float _DepthScale;
     static int _MaxMatchPointThres;
+    static int _MinMatchPointThres;
     static int _MaxFramesBetween;
     static int _MinFramesBetween;
     static int _key_frame_num;

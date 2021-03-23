@@ -2,12 +2,15 @@
 
 Map::Map()
 {
-    _final_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>(); 
+    _final_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
+    _final_cloud->width = 0;
+    _final_cloud->height = 1;
+    _final_cloud->points.resize(_final_cloud->width * _final_cloud->height);
 }
 
 Map::~Map()
 {
-
+    //MapPointCloudFusion();
 }
 
 void Map::Set2TrajVec(Eigen::Vector3f traj)
@@ -132,15 +135,29 @@ int Map::InMatchVec(int i, std::vector<cv::DMatch>& last_match_vec)
 
 void Map::MapPointCloudFusion()
 {
-    
     for(int i = 0; i < _key_frame_vec.size(); i++)
     {
         Frame::Ptr this_frame = _key_frame_vec[i];
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr this_cloud = this_frame->GetRGBCloud();
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr this_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr trans_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+        this_cloud = this_frame->GetRGBCloud();
+
+        std::cout << this_cloud->size() << std::endl;
+
         Eigen::Matrix4f this_trans = this_frame->GetAbsPose();
+        Eigen::Matrix3f rotation = this_trans.block<3,3>(0,0);
+        Eigen::Vector3f translation = this_trans.block<3,1>(0,3);
+        Eigen::Affine3f transform = Eigen::Affine3f::Identity();
+        transform.rotate(rotation);
+        transform.translate(translation);
 
-        pcl::transformPointCloud(*this_cloud, *this_cloud, this_trans);
-
-        *_final_cloud += *this_cloud;
+        std::cout << "OK1" << std::endl;
+        pcl::transformPointCloud(*this_cloud, *trans_cloud, transform);
+        std::cout << "OK2" << std::endl;
+        *_final_cloud += *trans_cloud;
     }
+
+    pcl::PCDWriter writer;
+    writer.write("../savings/map.pcd", *_final_cloud);
 }
+

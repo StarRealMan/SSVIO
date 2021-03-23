@@ -18,9 +18,10 @@ void Viewer::DrawTrajnTrans()
     std::vector<Frame::Ptr>& key_frames_vec = _viewer_map->GetKeyFramesVec();
     std::vector<Eigen::Vector3f>& pose_traj_vec = _viewer_map->GetTrajVec();
 
-    for(int i = 0; i < key_frames_vec.size(); i++)
-    {
-        Eigen::Matrix4f trans = key_frames_vec[i]->GetAbsPose();
+    // for(int i = 0; i < key_frames_vec.size(); i++)
+    // {
+        // Eigen::Matrix4f trans = key_frames_vec[i]->GetAbsPose();
+        Eigen::Matrix4f trans = key_frames_vec[key_frames_vec.size()-1]->GetAbsPose();
         
         glPushMatrix();
         std::vector<GLdouble> Twc = {trans(0, 0), trans(1, 0), trans(2, 0), 0.,
@@ -46,7 +47,7 @@ void Viewer::DrawTrajnTrans()
         glVertex3f(-w,-h,z);    glVertex3f(w,-h,z);
         glEnd();
         glPopMatrix();
-    }
+    // }
 
     glLineWidth(2);
     glBegin(GL_LINES);

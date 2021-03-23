@@ -27,9 +27,10 @@ Threshold         : 50
 NNRatio           : 0.6
 
 #KeyFrame
-MaxMatchPointThres: 100
-MaxFramesBetween  : 30
-MinFramesBetween  : 8
+MaxMatchPointThres: 80
+MinMatchPointThres: 50
+MaxFramesBetween  : 40
+MinFramesBetween  : 20
 
 #Local
 WindowSize        : 10
@@ -42,3 +43,4 @@ DataLen           : 32
 
 #Optimizer
 IMUGain           : 100.0
+Chi2Thresh        : 12.8

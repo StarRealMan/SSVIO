@@ -29,6 +29,10 @@ void Frame::CheckKeyFrame(bool local_busy, int match_point_num, int frames_betwe
         {
             SetKeyFrame();
         }
+        else if(match_point_num < _MinMatchPointThres)
+        {
+            return;
+        }
         else
         {
             return;

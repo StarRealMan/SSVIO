@@ -119,7 +119,7 @@ Eigen::Matrix4f Odometry::OptimizeTransform(Eigen::Matrix3f imu_trans_measure, E
     if(_final_good_match.size() > 20)
     {
         std::cout << "Start Optimize" << std::endl;
-        optimizer->DoOptimization(20);
+        optimizer->DoOptimization(10);
         transform = optimizer->GetPose();
     }
     else
@@ -162,6 +162,8 @@ void Odometry::OdometryLoop()
                 Eigen::Matrix3f imu_rotate_measure;
                 Eigen::Vector3f imu_transit_measure;
                 _imu->GetIMURotateData(imu_rotate_measure);
+                Eigen::Quaternionf IMU_rotate_q(imu_rotate_measure);
+                imu_rotate_measure = IMU_rotate_q.matrix();
                 _imu->GetIMUTransitData(imu_transit_measure);
 
                 _init_rdy = true;
@@ -177,6 +179,8 @@ void Odometry::OdometryLoop()
                 Eigen::Matrix3f imu_rotate_measure;
                 Eigen::Vector3f imu_transit_measure;
                 _imu->GetIMURotateData(imu_rotate_measure);
+                Eigen::Quaternionf IMU_rotate_q(imu_rotate_measure);
+                imu_rotate_measure = IMU_rotate_q.matrix();
                 _imu->GetIMUTransitData(imu_transit_measure);
                 
                 transform = OptimizeTransform(imu_rotate_measure, imu_transit_measure);

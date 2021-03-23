@@ -59,7 +59,7 @@ void IMU::receive(unsigned char* buff, size_t& length)
 
 void IMU::ReceivePack()
 {
-    while(1)
+    while(_IMU_running)
     {
         unsigned char receive_buf[_MaxBufferLen];
         size_t length;
@@ -98,8 +98,6 @@ void IMU::GetIMURotateData(Eigen::Matrix3f &IMU_rotate)
     static Eigen::Matrix3f last_IMU_rotate = Eigen::Matrix3f::Identity();
     std::lock_guard<std::mutex> lck(_IMU_rotate_data_mtx);
     IMU_rotate = _IMU_rotate * last_IMU_rotate.inverse();
-    Eigen::Quaternionf IMU_rotate_q(IMU_rotate);
-    IMU_rotate = IMU_rotate_q.matrix();
     last_IMU_rotate = _IMU_rotate;
 }
 

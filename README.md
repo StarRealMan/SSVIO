@@ -95,10 +95,9 @@ After running ./run_visual_reconstruct, you will see three windows:
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Bug
-* Check Key Frame Method
-* Poor match points need to be kicked while optimizing dynamicaly
 * Use solve pnp RANSAC to filter outliers
 * Local g2o optimization error
+* Coordinate error
 
 ## Author
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)

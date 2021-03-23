@@ -16,9 +16,38 @@ OdomOptimizer::~OdomOptimizer()
 
 void OdomOptimizer::DoOptimization(int optim_round)
 {
-    // do edge outlier check
-    _optimizer.initializeOptimization();
-    _optimizer.optimize(optim_round);
+    for(int iteration = 0; iteration < 4; ++iteration)
+    {
+        // _optimizer.setVerbose(true);
+        _vertex_pose->setEstimate(_optimze_val);
+        _optimizer.initializeOptimization();
+        _optimizer.optimize(optim_round);
+
+        for(int i = 0; i < _edge_n_lier.size(); ++i)
+        {
+            auto e = _edge_n_lier[i];
+            if(e.second)
+            {
+                e.first->computeError();
+            }
+            if(e.first->chi2() > _Chi2Thresh)
+            {
+                e.second = true;
+                e.first->setLevel(1);
+            }
+            else
+            {
+                e.second = false;
+                e.first->setLevel(0);
+            };
+
+            if(iteration == 2)
+            {
+                e.first->setRobustKernel(nullptr);
+            }
+        }
+    }
+
 }
 
 void OdomOptimizer::AddPose(Eigen::Matrix4f pose_val)
@@ -44,6 +73,7 @@ void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_me
     edge->setMeasurement(measured_point);
     edge->setInformation(Eigen::Matrix3d::Identity());
     edge->setRobustKernel(new g2o::RobustKernelHuber);
+    _edge_n_lier[measure_id] = std::pair<EdgeICPPoseOnly*, bool>(edge, false);
     _optimizer.addEdge(edge);
 }
 
