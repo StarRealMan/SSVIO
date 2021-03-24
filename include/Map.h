@@ -7,9 +7,9 @@
 #include <pcl/console/parse.h>
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/filters/voxel_grid.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
 
 #include <boost/make_shared.hpp>
 #include <iostream>
@@ -17,6 +17,7 @@
 #include <thread>
 #include <mutex>
 
+#include "Config.h"
 #include "Frame.h"
 #include "MapPoint.h"
 
@@ -25,7 +26,7 @@ class Map
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
     typedef std::shared_ptr<Map> Ptr;
-    Map();
+    Map(Config::Ptr config);
     ~Map();
 
     void Set2KeyFrameVec(Frame::Ptr key_frame);
@@ -46,6 +47,8 @@ private:
     std::vector<Frame::Ptr> _key_frame_vec;
     std::vector<Eigen::Vector3f> _traj_vec;
     std::vector<MapPoint::Ptr> _map_point_vec;
+
+    float _VoxelSize;
 
     std::mutex _key_frame_vec_mtx;
     std::mutex _traj_vec_mtx;

@@ -31,7 +31,7 @@ void Local::LocalLoop()
         {
             int pose_num = 0;
             int measure_id = 0;
-            for(int i = _WindowSize; i > 0; i--)
+            for(size_t i = _WindowSize; i > 0; i--)
             {
                 Frame::Ptr key_frame;
                 key_frame = _map->GetKeyFrames(-i);

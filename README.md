@@ -95,9 +95,10 @@ After running ./run_visual_reconstruct, you will see three windows:
 Press "Esc" at RGB window or press "Ctrl-C" at terminal to stop the program
 
 ## Bug
-* Use solve pnp RANSAC to filter outliers
+* Use solvepnpRANSAC to filter outliers
+* Jacobian of IMU measure
 * Local g2o optimization error
-* Coordinate error
+* Not orthogonal error
 
 ## Author
 ![avatar.png](https://github.com/StarRealMan/SSVIO/blob/main/images/avatar.png?raw=true)

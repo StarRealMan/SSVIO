@@ -13,14 +13,14 @@ InnerFy           : 254.1649
 DepthScale        : 10.0
 
 #VO
-FeatureNum        : 1000
+FeatureNum        : 1200
 ScaleFactor       : 1.2
 LevelNum          : 8
 IniThFAST         : 20
 MinThFAST         : 7
 
 #Map
-Voxel_size        : 100.0
+VoxelSize        : 0.01
 
 #FeatureMatching
 Threshold         : 50
@@ -42,5 +42,6 @@ MaxBufferLen      : 100
 DataLen           : 32
 
 #Optimizer
-IMUGain           : 100.0
+IMUGain           : 5000.0
 Chi2Thresh        : 12.8
+ZAxisInfo         : 0.5

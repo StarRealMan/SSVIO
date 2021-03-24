@@ -31,14 +31,13 @@ public:
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr GetRGBCloud();
     cv::Mat GetDImage();
     cv::Mat GetRGBImage();
-    pcl::PointXYZRGB GetRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans);
+    pcl::PointXYZRGB GetRGB3DPoint(int pos_x, int pos_y);
     
     bool IsGrabRdy();
     void SetGrabRdyfalse();
 
     void GrabLoop();
     void CameraStop();
-
 
 private:
     int _UseXtionGen;

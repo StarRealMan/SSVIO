@@ -19,6 +19,8 @@
 #include <thread>
 #include <mutex>
 
+#define PI 3.1415926535897932
+
 class Odometry
 {
 public:
@@ -50,6 +52,7 @@ private:
     int _frames_between;
     bool _init_rdy;
     bool _local_busy;
+    
     int _FeatureNum;
     float _ScaleFactor;
     int _LevelNum;

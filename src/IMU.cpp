@@ -72,7 +72,7 @@ void IMU::ReceivePack()
             {
                 float data_buf[_DataNum];
 
-                for(int i = 0; i < _DataNum; i++)
+                for(size_t i = 0; i < _DataNum; i++)
                 {
                     UcharNFloat uchar_n_float;
                     for(int j = 0; j < 4; j++)
@@ -86,6 +86,7 @@ void IMU::ReceivePack()
                 _IMU_rotate = _IMU2Cam * IMU_quaternion.normalized().matrix();
                 _IMU_acc << data_buf[4], data_buf[5], data_buf[6];
                 _IMU_acc = _IMU2Cam * _IMU_acc;
+
                 break;
             }
         }

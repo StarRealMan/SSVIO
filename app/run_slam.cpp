@@ -5,7 +5,7 @@ int main(int argc, char** argv)
 {
     XtionCamera::Ptr camera(new XtionCamera(config));
 	cout << "Camera Init OK!" << endl;
-    Map::Ptr map(new Map());
+    Map::Ptr map(new Map(config));
 	cout << "Map Init OK!" << endl;
     IMU::Ptr imu(new IMU(config));
 	cout << "IMU Init OK!" << endl;
@@ -27,6 +27,8 @@ int main(int argc, char** argv)
 	std::cout << "IMU closed!" << std::endl;
     camera->CameraStop();
 	std::cout << "Camera closed!" << std::endl;
+
+    map->MapPointCloudFusion();
 
     return 0;
 }

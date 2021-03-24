@@ -135,7 +135,7 @@ cv::Mat XtionCamera::GetRGBImage()
     return _rgb_image;
 }
 
-pcl::PointXYZRGB XtionCamera::GetRGB3DPoint(int pos_x, int pos_y, const Eigen::Matrix4f& trans)
+pcl::PointXYZRGB XtionCamera::GetRGB3DPoint(int pos_x, int pos_y)
 {        
     std::lock_guard<std::mutex> lck_d(_d_image_mtx);
     std::lock_guard<std::mutex> lck_rgb(_rgb_image_mtx);
@@ -150,7 +150,6 @@ pcl::PointXYZRGB XtionCamera::GetRGB3DPoint(int pos_x, int pos_y, const Eigen::M
             (pos_y - _InnerCy)*depth*_InvInnerFy,
             depth, 1.0;
 
-    temp = trans * temp;
     rgb3dpoint.x = temp[0];
     rgb3dpoint.y = temp[1];
     rgb3dpoint.z = temp[2];
@@ -224,7 +223,7 @@ void XtionCamera::GrabImage()
             for(ushort v = 0; v < _d_image.rows; v++)
             {
                 int i = u * _d_image.rows + v;
-                _rgb_cloud->points[i] = GetRGB3DPoint(u,v,Eigen::Matrix4f::Identity());
+                _rgb_cloud->points[i] = GetRGB3DPoint(u,v);
             }
         }
     }

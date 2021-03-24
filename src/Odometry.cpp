@@ -153,10 +153,11 @@ void Odometry::OdometryLoop()
 
             if(!_init_rdy)
             {
+                _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
+                _cur_frame->SetKeyFrame();
+                _cur_frame->SetRGBCloud(_camera->GetRGBCloud());
                 _map->ManageMapPoints(_cur_frame, last_match_vec);
                 _map->Set2KeyFrameVec(_cur_frame);
-                _cur_frame->SetKeyFrame();
-                _cur_frame->SetAbsPose(Eigen::Matrix4f::Identity());
                 std::cout << "Add a Key Frame, Now Num: " << _map->GetKeyFrameNum() << std::endl;
 
                 Eigen::Matrix3f imu_rotate_measure;
@@ -190,11 +191,17 @@ void Odometry::OdometryLoop()
                 abs_pose.block<3,3>(0,0) = abs_pose_q.matrix();
 
                 _cur_frame->SetAbsPose(abs_pose);
-                _map->Set2TrajVec(abs_pose.block<3,1>(0,3));
+                _map->Set2TrajVec(abs_pose.inverse().block<3,1>(0,3));
 
                 std::cout << "Found " << cur_frame_desp.rows << " Key Points" << std::endl;
                 std::cout << "Found " << _final_good_match.size() << " Matches" << std::endl;
-                std::cout << abs_pose << std::endl;
+
+                // std::cout << abs_pose.inverse() << std::endl;
+                Eigen::Vector3f eulers = abs_pose.inverse().block<3,3>(0,0).eulerAngles(2,1,0);
+                std::cout << "Euler Angles: Yaw Pitch Roll" << std::endl;
+                std::cout << eulers/PI*180 << std::endl;
+                std::cout << "Translation: X Y Z" << std::endl;
+                std::cout << abs_pose.inverse().block<3,1>(0,3) << std::endl;
                 
                 if(_last_frame->IsKeyFrame())
                 {

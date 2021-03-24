@@ -18,11 +18,21 @@ void Viewer::DrawTrajnTrans()
     std::vector<Frame::Ptr>& key_frames_vec = _viewer_map->GetKeyFramesVec();
     std::vector<Eigen::Vector3f>& pose_traj_vec = _viewer_map->GetTrajVec();
 
-    // for(int i = 0; i < key_frames_vec.size(); i++)
-    // {
-        // Eigen::Matrix4f trans = key_frames_vec[i]->GetAbsPose();
-        Eigen::Matrix4f trans = key_frames_vec[key_frames_vec.size()-1]->GetAbsPose();
-        
+
+    glLineWidth(2); 
+    glBegin(GL_LINES);
+    glColor3f(1.f,0.f,0.f);
+    glVertex3f(0,0,0);		glVertex3f(1.f,0,0);
+    glColor3f(0.f,0.f,1.f);
+    glVertex3f(0,0,0);		glVertex3f(0,1.f,0);
+    glColor3f(0.f,1.f,0.f);
+    glVertex3f(0,0,0);		glVertex3f(0,0,1.f);
+    glEnd();
+
+    for(size_t i = 0; i < key_frames_vec.size(); i++)
+    {
+        Eigen::Matrix4f trans = key_frames_vec[i]->GetAbsPose().inverse();
+
         glPushMatrix();
         std::vector<GLdouble> Twc = {trans(0, 0), trans(1, 0), trans(2, 0), 0.,
                                      trans(0, 1), trans(1, 1), trans(2, 1), 0.,
@@ -30,9 +40,13 @@ void Viewer::DrawTrajnTrans()
                                      trans(0, 3), trans(1, 3), trans(2, 3), 1.};
         glMultMatrixd(Twc.data());
 
-        const float w = 0.12;
-        const float h = w * 0.75;
-        const float z = w * 0.6;
+        float w = 0.02;
+        if(i == key_frames_vec.size() - 1)
+        {
+            w = 0.12;
+        }
+        float h = w * 0.75;
+        float z = w * 0.6;
 
         glLineWidth(1); 
         glBegin(GL_LINES);
@@ -47,12 +61,12 @@ void Viewer::DrawTrajnTrans()
         glVertex3f(-w,-h,z);    glVertex3f(w,-h,z);
         glEnd();
         glPopMatrix();
-    // }
+    }
 
     glLineWidth(2);
     glBegin(GL_LINES);
-    glColor3f(0.f, 1.f, 0.f);
-    for(int  i = 0; i < pose_traj_vec.size() - 1; i++)
+    glColor3f(0.f, 1.f, 1.f);
+    for(size_t  i = 0; i < pose_traj_vec.size() - 1; i++)
     {
         Eigen::Vector3f this_pose = pose_traj_vec[i];
         Eigen::Vector3f next_pose = pose_traj_vec[i+1];
@@ -72,7 +86,7 @@ void Viewer::ViewerLoop()
     glEnable(GL_DEPTH_TEST);
     
     pangolin::OpenGlRenderState s_cam(pangolin::ProjectionMatrix(640,480,420,420,320,240,0.1,1000),
-                                      pangolin::ModelViewLookAt(-2,0,-2, 0,0,0, pangolin::AxisY));
+                                      pangolin::ModelViewLookAt(0,0,-0.5, 0,0,0, pangolin::AxisNegY));
     
     pangolin::View& d_cam = pangolin::Display("cam")
         .SetBounds(0., 1., 1/3.0f, 1., -640/480.)
@@ -93,7 +107,6 @@ void Viewer::ViewerLoop()
         auto t1 = std::chrono::steady_clock::now();
      
         _cur_frame = _viewer_odometry->GetCurFrame();
-        Eigen::Matrix4f this_pose = _cur_frame->GetAbsPose();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         d_cam.Activate(s_cam);

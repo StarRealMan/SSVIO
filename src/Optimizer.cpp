@@ -16,14 +16,14 @@ OdomOptimizer::~OdomOptimizer()
 
 void OdomOptimizer::DoOptimization(int optim_round)
 {
-    for(int iteration = 0; iteration < 4; ++iteration)
+    for(size_t iteration = 0; iteration < 4; ++iteration)
     {
         // _optimizer.setVerbose(true);
         _vertex_pose->setEstimate(_optimze_val);
         _optimizer.initializeOptimization();
         _optimizer.optimize(optim_round);
 
-        for(int i = 0; i < _edge_n_lier.size(); ++i)
+        for(size_t i = 0; i < _edge_n_lier.size(); ++i)
         {
             auto e = _edge_n_lier[i];
             if(e.second)
@@ -71,7 +71,9 @@ void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_me
     edge->setId(measure_id);
     edge->setVertex(0, _vertex_pose);
     edge->setMeasurement(measured_point);
-    edge->setInformation(Eigen::Matrix3d::Identity());
+    Eigen::Matrix3d Information;
+    Information << 1, 0, 0, 0, 1, 0, 0, 0, _ZAxisInfo;
+    edge->setInformation(Information);
     edge->setRobustKernel(new g2o::RobustKernelHuber);
     _edge_n_lier[measure_id] = std::pair<EdgeICPPoseOnly*, bool>(edge, false);
     _optimizer.addEdge(edge);

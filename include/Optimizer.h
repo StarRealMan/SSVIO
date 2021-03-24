@@ -132,7 +132,7 @@ public:
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T_curr = v->estimate();
-        SO3 T_m(_measurement);
+        SO3 T_m(_measurement.inverse());
         SO3 T_key(_ref_frame_pose.block<3,3>(0,0));
         _error = ((T_m.cast<double>() * T_key.cast<double>()) * T_curr.so3().cast<double>().inverse()).log();
     }
@@ -223,6 +223,7 @@ public:
 private:
     static float _IMUGain;
     static float _Chi2Thresh;
+    static float _ZAxisInfo;
     
     g2o::SparseOptimizer _optimizer;
     VertexPose *_vertex_pose;

@@ -149,11 +149,13 @@ int Frame::GetMapPointID(int point_id)
 void Frame::SetRGBCloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud)
 {
     std::lock_guard<std::mutex> lck(_rgb_cloud_mtx);
-    _rgb_cloud = rgb_cloud;
+    _rgb_cloud = *rgb_cloud;
 }
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr Frame::GetRGBCloud()
 {
     std::lock_guard<std::mutex> lck(_rgb_cloud_mtx);
-    return _rgb_cloud;
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr rgb_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
+    *rgb_cloud = _rgb_cloud;
+    return rgb_cloud;
 }

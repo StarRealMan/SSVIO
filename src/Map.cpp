@@ -1,16 +1,17 @@
 #include "Map.h"
 
-Map::Map()
+Map::Map(Config::Ptr config)
 {
     _final_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
     _final_cloud->width = 0;
     _final_cloud->height = 1;
     _final_cloud->points.resize(_final_cloud->width * _final_cloud->height);
+    _VoxelSize = config->GetParam<float>("VoxelSize");
 }
 
 Map::~Map()
 {
-    //MapPointCloudFusion();
+
 }
 
 void Map::Set2TrajVec(Eigen::Vector3f traj)
@@ -73,7 +74,7 @@ void Map::TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv
 {
     std::vector<cv::DMatch> temp_last_match_vec;
 
-    for(int i = 0; i < last_match_vec.size(); i++)
+    for(size_t i = 0; i < last_match_vec.size(); i++)
     {
         for(int j = 0; j < this_match_vec.size(); j++)
         {
@@ -97,7 +98,7 @@ void Map::TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv
 void Map::ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch>& last_match_vec)
 {
     Eigen::Matrix4f world_trans = key_frame->GetAbsPose().inverse();
-    for(int i = 0; i < key_frame->GetKeyPoints().size(); i++)
+    for(size_t i = 0; i < key_frame->GetKeyPoints().size(); i++)
     {
         int match_num = InMatchVec(i, last_match_vec);
         if(match_num == -1)
@@ -135,29 +136,36 @@ int Map::InMatchVec(int i, std::vector<cv::DMatch>& last_match_vec)
 
 void Map::MapPointCloudFusion()
 {
-    for(int i = 0; i < _key_frame_vec.size(); i++)
+    for(size_t i = 0; i < GetKeyFrameNum(); i++)
     {
-        Frame::Ptr this_frame = _key_frame_vec[i];
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr this_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr trans_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+        Frame::Ptr this_frame = GetKeyFrames(i);
+        
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr trans_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr this_cloud =  boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
         this_cloud = this_frame->GetRGBCloud();
 
-        std::cout << this_cloud->size() << std::endl;
-
-        Eigen::Matrix4f this_trans = this_frame->GetAbsPose();
+        Eigen::Matrix4f this_trans = this_frame->GetAbsPose().inverse();
         Eigen::Matrix3f rotation = this_trans.block<3,3>(0,0);
         Eigen::Vector3f translation = this_trans.block<3,1>(0,3);
         Eigen::Affine3f transform = Eigen::Affine3f::Identity();
         transform.rotate(rotation);
         transform.translate(translation);
 
-        std::cout << "OK1" << std::endl;
         pcl::transformPointCloud(*this_cloud, *trans_cloud, transform);
-        std::cout << "OK2" << std::endl;
+
         *_final_cloud += *trans_cloud;
+
+        pcl::VoxelGrid<pcl::PointXYZRGB> sor;
+        sor.setInputCloud(_final_cloud);
+        sor.setLeafSize(_VoxelSize, _VoxelSize, _VoxelSize);
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_filtered =  boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
+        sor.filter(*cloud_filtered);
+
+        *_final_cloud = *cloud_filtered;
     }
 
     pcl::PCDWriter writer;
     writer.write("../savings/map.pcd", *_final_cloud);
+    std::cout << "Final Point Cloud Map Has " << _final_cloud->size() << " Points!" << std::endl; 
 }
 

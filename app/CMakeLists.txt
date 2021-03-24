@@ -20,12 +20,3 @@ file(MAKE_DIRECTORY "../savings/pointcloud")
 #                       xtion_driver
 #                       libSSVIO
 #                       ${THIRD_PARTY_LIBS})
-
-
-# add_executable(run_viewer
-#                run_viewer.cpp)
-
-# target_link_libraries(run_viewer
-#                       xtion_driver
-#                       libSSVIO
-#                       ${THIRD_PARTY_LIBS})

@@ -63,7 +63,7 @@ private:
     bool _is_key_frame;
     int _key_frame_id;
     Eigen::Matrix4f _abs_pos;
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr _rgb_cloud;
+    pcl::PointCloud<pcl::PointXYZRGB> _rgb_cloud;
 
     std::vector<cv::KeyPoint> _key_point_vec;
     std::vector<std::pair<int, int>> _observed_mappid_pid_vec;

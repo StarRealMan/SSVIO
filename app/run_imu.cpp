@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-    IMU::Ptr imu(new IMU(config));
+    IMU::Ptr imu(new IMU());
     Eigen::Vector3f vec;
     Eigen::Matrix3f mat;
     sleep(1);
