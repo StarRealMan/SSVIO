@@ -15,7 +15,6 @@ Odometry::Odometry(XtionCamera::Ptr camera, IMU::Ptr imu, Map::Ptr map, Config::
     _InnerK = (cv::Mat_<float>(3,3) << Frame::_InnerFx, 0, Frame::_InnerCx, 0, Frame::_InnerFy, Frame::_InnerCy, 0, 0, 1);
     _frames_between = 0;
     _init_rdy = false;
-    _local_busy = false;
 
     _odometry_running.store(true);
     _odometry_thread = std::thread(std::bind(&Odometry::OdometryLoop,this));
@@ -24,12 +23,6 @@ Odometry::Odometry(XtionCamera::Ptr camera, IMU::Ptr imu, Map::Ptr map, Config::
 Odometry::~Odometry()
 {
     
-}
-
-void Odometry::SetLocalStatus(bool local_busy)
-{
-    std::lock_guard<std::mutex> lck(_local_status_mtx);
-    _local_busy = local_busy;
 }
 
 Frame::Ptr Odometry::GetCurFrame()
@@ -213,9 +206,11 @@ void Odometry::OdometryLoop()
                     _map->TrackMapPoints(last_match_vec, _final_good_match);
                 }
 
-                _cur_frame->CheckKeyFrame(_local_busy, last_match_vec.size(), _frames_between);
+                _cur_frame->CheckKeyFrame(_map->GetLocalStatus(), last_match_vec.size(), _frames_between);
                 if(_cur_frame->IsKeyFrame())
                 {
+                    _map->SetOdomStatus(true);
+                    
                     _cur_frame->SetRGBCloud(_camera->GetRGBCloud());
                     _map->ManageMapPoints(_cur_frame, last_match_vec);
                     _map->Set2KeyFrameVec(_cur_frame);
@@ -223,6 +218,8 @@ void Odometry::OdometryLoop()
                     std::cout << "Now the Map Point Num: " << _map->GetMapPointNum() << std::endl;
 
                     _frames_between = 0;
+
+                    _map->SetOdomStatus(false);
                 }
                 else
                 {

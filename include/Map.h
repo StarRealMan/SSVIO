@@ -37,6 +37,11 @@ public:
     int GetKeyFrameNum();
     MapPoint::Ptr GetMapPoint(int map_point_id);
     int GetMapPointNum();
+    void SetOdomStatus(bool odom_busy);
+    bool GetOdomStatus();
+    void SetLocalStatus(bool local_busy);
+    bool GetLocalStatus();
+
     void TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv::DMatch> &this_match_vec);
     void ManageMapPoints(Frame::Ptr key_frame, std::vector<cv::DMatch>& last_match_vec);
     int InMatchVec(int i, std::vector<cv::DMatch>& last_match_vec);
@@ -48,15 +53,17 @@ private:
     std::vector<Eigen::Vector3f> _traj_vec;
     std::vector<MapPoint::Ptr> _map_point_vec;
 
+    bool _odom_busy;
+    bool _local_busy;
     float _VoxelSize;
 
     std::mutex _key_frame_vec_mtx;
     std::mutex _traj_vec_mtx;
     std::mutex _key_frame_mtx;
     std::mutex _map_point_mtx;
+    std::mutex _local_status_mtx;
+    std::mutex _odom_status_mtx;
 };
-
-
 
 
 #endif

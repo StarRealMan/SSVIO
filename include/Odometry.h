@@ -51,7 +51,6 @@ private:
 
     int _frames_between;
     bool _init_rdy;
-    bool _local_busy;
     
     int _FeatureNum;
     float _ScaleFactor;
@@ -63,8 +62,6 @@ private:
     std::atomic<bool> _odometry_running;
     std::thread _odometry_thread;
     std::mutex _cur_frame_mtx;
-    std::mutex _local_status_mtx;
-
 };
 
 #endif

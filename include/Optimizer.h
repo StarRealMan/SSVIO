@@ -246,11 +246,15 @@ public:
     void AddMeasure(cv::Point3f cv_measured_point, int measure_id, int pose_id, int point_id);
 
 private:
+    static float _Chi2Thresh;
+    static float _ZAxisInfo;
+
     g2o::SparseOptimizer _optimizer;
     std::map<int,VertexPose*> _vertex_pose_map;
     std::map<int,VertexPoint*> _vertex_point_map;
     std::map<int,Eigen::Vector3f> _optimze_point_val_map;
     std::map<int,SE3> _optimze_pose_val_map;
+    std::map<int, std::pair<EdgeICPPosePoint*, bool>> _edge_n_lier;
 };
 
 

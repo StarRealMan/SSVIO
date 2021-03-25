@@ -37,6 +37,7 @@
 /lib
 /savings
 /.vscode
+/vocabulary
 *.code-workspace
 
 

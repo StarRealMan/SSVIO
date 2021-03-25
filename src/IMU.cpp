@@ -50,7 +50,6 @@ void IMU::send(unsigned char* ch, size_t length)
     boost::asio::write(*_port, boost::asio::buffer(ch, length));
 }
 
-
 void IMU::receive(unsigned char* buff, size_t& length)
 {
     boost::system::error_code err;
@@ -81,7 +80,6 @@ void IMU::ReceivePack()
                     }
                     data_buf[i] = uchar_n_float.fl;
                 }
-
                 Eigen::Quaternionf IMU_quaternion(data_buf[0], data_buf[1], data_buf[2], data_buf[3]);
                 _IMU_rotate = _IMU2Cam * IMU_quaternion.normalized().matrix();
                 _IMU_acc << data_buf[4], data_buf[5], data_buf[6];
@@ -91,7 +89,6 @@ void IMU::ReceivePack()
             }
         }
     }
-    
 }
 
 void IMU::GetIMURotateData(Eigen::Matrix3f &IMU_rotate)

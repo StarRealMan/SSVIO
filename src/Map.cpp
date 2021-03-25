@@ -7,6 +7,8 @@ Map::Map(Config::Ptr config)
     _final_cloud->height = 1;
     _final_cloud->points.resize(_final_cloud->width * _final_cloud->height);
     _VoxelSize = config->GetParam<float>("VoxelSize");
+    _local_busy = false;
+    _odom_busy = false;
 }
 
 Map::~Map()
@@ -68,6 +70,31 @@ MapPoint::Ptr Map::GetMapPoint(int map_point_id)
 int Map::GetMapPointNum()
 {
     return _map_point_vec.size();
+}
+
+
+void Map::SetOdomStatus(bool odom_busy)
+{
+    std::lock_guard<std::mutex> lck(_odom_status_mtx);
+    _odom_busy = odom_busy;
+}
+
+bool Map::GetOdomStatus()
+{
+    std::lock_guard<std::mutex> lck(_odom_status_mtx);
+    return _odom_busy;
+}
+
+void Map::SetLocalStatus(bool local_busy)
+{
+    std::lock_guard<std::mutex> lck(_local_status_mtx);
+    _local_busy = local_busy;
+}
+
+bool Map::GetLocalStatus()
+{
+    std::lock_guard<std::mutex> lck(_local_status_mtx);
+    return _local_busy;
 }
 
 void Map::TrackMapPoints(std::vector<cv::DMatch> &last_match_vec, std::vector<cv::DMatch> &this_match_vec)

@@ -27,5 +27,8 @@ float OdomOptimizer::_IMUGain = config->GetParam<float>("IMUGain");
 float OdomOptimizer::_Chi2Thresh = config->GetParam<float>("Chi2Thresh");
 float OdomOptimizer::_ZAxisInfo = config->GetParam<float>("ZAxisInfo");
 
+float LocalOptimizer::_Chi2Thresh = config->GetParam<float>("LocalChi2Thresh");
+float LocalOptimizer::_ZAxisInfo = config->GetParam<float>("ZAxisInfo");
+
 int Frame::_key_frame_num = 0;
 int MapPoint::_map_point_num = 0;
