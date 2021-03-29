@@ -59,6 +59,7 @@ void OdomOptimizer::AddPose(Eigen::Matrix4f pose_val)
 
 void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id)
 {
+    static Eigen::Matrix3d Information;
     Eigen::Matrix<float, 3, 1> refered_point;
     Eigen::Matrix<float, 3, 1> measured_point;
 
@@ -69,7 +70,6 @@ void OdomOptimizer::AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_me
     edge->setId(measure_id);
     edge->setVertex(0, _vertex_pose);
     edge->setMeasurement(measured_point);
-    Eigen::Matrix3d Information;
     Information << 1, 0, 0, 0, 1, 0, 0, 0, _ZAxisInfo;
     edge->setInformation(Information);
     edge->setRobustKernel(new g2o::RobustKernelHuber);
@@ -168,6 +168,7 @@ void LocalOptimizer::AddPoint(Eigen::Vector3f map_point, int point_id)
 
 void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id, int pose_id, int point_id)
 {
+    static Eigen::Matrix3d Information;
     Eigen::Matrix<float, 3, 1> measured_point;
     measured_point << cv_measured_point.x, cv_measured_point.y, cv_measured_point.z;
 
@@ -176,7 +177,6 @@ void LocalOptimizer::AddMeasure(cv::Point3f cv_measured_point, int measure_id, i
     edge->setVertex(0, _vertex_pose_map[pose_id]);
     edge->setVertex(1, _vertex_point_map[point_id]);
     edge->setMeasurement(measured_point);
-    Eigen::Matrix3d Information;
     Information << 1, 0, 0, 0, 1, 0, 0, 0, _ZAxisInfo;
     edge->setInformation(Eigen::Matrix3d::Identity());
     edge->setRobustKernel(new g2o::RobustKernelHuber);
