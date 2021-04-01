@@ -20,7 +20,7 @@ IniThFAST         : 20
 MinThFAST         : 7
 
 #Map
-VoxelSize        : 0.05
+VoxelSize        : 0.01
 
 #FeatureMatching
 Threshold         : 50

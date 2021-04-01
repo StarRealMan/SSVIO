@@ -126,15 +126,15 @@ class EdgeIMUPoseOnly : public g2o::BaseUnaryEdge<3, Eigen::Matrix3f, VertexPose
 public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-    EdgeIMUPoseOnly(const Eigen::Matrix4f &key_frame_pose):BaseUnaryEdge(), _ref_frame_pose(key_frame_pose){}
+    EdgeIMUPoseOnly():BaseUnaryEdge(){}
 
     virtual void computeError() override
     {
         const VertexPose *v = static_cast<VertexPose *>(_vertices[0]);
         SE3 T_curr = v->estimate();
-        SO3 T_m(_measurement.inverse());
-        SO3 T_key(_ref_frame_pose.block<3,3>(0,0));
-        _error = ((T_m.cast<double>() * T_key.cast<double>()) * T_curr.so3().cast<double>().inverse()).log();
+        SO3 T_m(_measurement);
+        _error = (T_m.cast<double>() * T_curr.so3().cast<double>().inverse()).log();
+        
     }
 
     virtual void linearizeOplus() override
@@ -217,7 +217,7 @@ public:
     void DoOptimization(int optim_round);
     void AddPose(Eigen::Matrix4f pose_val);
     void AddCVMeasure(cv::Point3f cv_refered_point, cv::Point3f cv_measured_point, int measure_id);
-    void AddIMUMeasure(Eigen::Matrix4f ref_frame_pose, Eigen::Matrix3f imu_measured_pose, int measure_id);
+    void AddIMUMeasure(Eigen::Matrix3f imu_measured_pose, int measure_id);
     Eigen::Matrix4f GetPose();
 
 private:

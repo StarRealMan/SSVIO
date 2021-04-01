@@ -31,7 +31,7 @@ IMU::IMU(Config::Ptr config)
         exit(0);
     }
 
-    _IMU2Cam << 1, 0, 0, 0, 0, -1, 0, 1, 0;
+    _WorldChange << 1, 0, 0, 0, 0, -1, 0, 1, 0;
     _IMU_vel = Eigen::Vector3f::Zero();
     _IMU_transit = Eigen::Vector3f::Zero();
 
@@ -81,9 +81,9 @@ void IMU::ReceivePack()
                     data_buf[i] = uchar_n_float.fl;
                 }
                 Eigen::Quaternionf IMU_quaternion(data_buf[0], data_buf[1], data_buf[2], data_buf[3]);
-                _IMU_rotate = _IMU2Cam * IMU_quaternion.normalized().matrix();
+                _IMU_rotate = (_WorldChange * IMU_quaternion.normalized().matrix()).inverse();                
                 _IMU_acc << data_buf[4], data_buf[5], data_buf[6];
-                _IMU_acc = _IMU2Cam * _IMU_acc;
+                _IMU_acc = _WorldChange * _IMU_acc;
 
                 break;
             }
@@ -96,6 +96,8 @@ void IMU::GetIMURotateData(Eigen::Matrix3f &IMU_rotate)
     static Eigen::Matrix3f last_IMU_rotate = Eigen::Matrix3f::Identity();
     std::lock_guard<std::mutex> lck(_IMU_rotate_data_mtx);
     IMU_rotate = _IMU_rotate * last_IMU_rotate.inverse();
+    Eigen::Quaternionf rotate_q(IMU_rotate);
+    IMU_rotate = rotate_q.matrix();
     last_IMU_rotate = _IMU_rotate;
 }
 
@@ -103,7 +105,7 @@ void IMU::GetIMUTransitData(Eigen::Vector3f &IMU_transit)
 {
     static Eigen::Vector3f last_IMU_transit = Eigen::Vector3f::Zero();
     std::lock_guard<std::mutex> lck(_IMU_transit_data_mtx);
-    IMU_transit = _IMU_transit - last_IMU_transit;
+    IMU_transit = - (_IMU_transit - last_IMU_transit);
     last_IMU_transit = _IMU_transit;
 }
 

@@ -42,7 +42,7 @@ private:
 
     Eigen::Quaternionf _IMU_quaternion;
     Eigen::Matrix3f _IMU_rotate;
-    Eigen::Matrix3f _IMU2Cam;
+    Eigen::Matrix3f _WorldChange;
     Eigen::Vector3f _IMU_acc;
     Eigen::Vector3f _IMU_real_acc;
     Eigen::Vector3f _IMU_vel;
