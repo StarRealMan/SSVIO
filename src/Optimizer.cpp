@@ -51,8 +51,7 @@ void OdomOptimizer::DoOptimization(int optim_round)
 void OdomOptimizer::AddPose(Eigen::Matrix4f pose_val)
 {
     _vertex_pose = new VertexPose();
-    _optimze_val = SE3(pose_val);
-    _vertex_pose->setEstimate(_optimze_val);
+    _vertex_pose->setEstimate(SE3(pose_val));
     _vertex_pose->setId(0);
     _optimizer.addVertex(_vertex_pose);
 }
@@ -93,7 +92,7 @@ void OdomOptimizer::AddIMUMeasure(Eigen::Matrix3f imu_measured_pose, int measure
 
 Eigen::Matrix4f OdomOptimizer::GetPose()
 {
-    return _optimze_val.matrix();
+    return _vertex_pose->estmate().matrix();
 }
 
 

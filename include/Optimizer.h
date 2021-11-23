@@ -227,7 +227,6 @@ private:
     
     g2o::SparseOptimizer _optimizer;
     VertexPose *_vertex_pose;
-    SE3 _optimze_val;
     std::map<int, std::pair<EdgeICPPoseOnly*, bool>> _edge_n_lier;
 };
 
